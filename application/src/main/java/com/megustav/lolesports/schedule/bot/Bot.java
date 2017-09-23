@@ -42,7 +42,7 @@ public class Bot extends TelegramLongPollingBot {
 
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
-                    .setText(received.getText().contains("Инна") ?
+                    .setText(received.getText().contains("Инн") ?
                             "Люблю тебя. Дай еще супа" :
                             "Not implemented yet");
             sendMessage(message);
