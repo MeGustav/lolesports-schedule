@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dist</artifactId>
-    <name>Distri2butive</name>
+    <name>Distributive</name>
     <packaging>pom</packaging>
 
     <parent>
