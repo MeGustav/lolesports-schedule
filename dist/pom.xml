@@ -25,6 +25,7 @@
 
     <build>
         <plugins>
+            <!-- Pack application to ZIP -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
