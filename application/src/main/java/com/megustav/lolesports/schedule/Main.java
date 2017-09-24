@@ -1,6 +1,8 @@
 package com.megustav.lolesports.schedule;
 
-import com.megustav.lolesports.schedule.bot.Bot;
+import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -13,16 +15,17 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
  */
 public class Main {
 
+    /** Logger */
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
-        System.out.println("Starting application");
-        ApiContextInitializer.init();
-
-        TelegramBotsApi botsApi = new TelegramBotsApi();
-
+        log.info("Starting bot...");
         try {
-            botsApi.registerBot(new Bot());
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+            ApiContextInitializer.init();
+            TelegramBotsApi botsApi = new TelegramBotsApi();
+            botsApi.registerBot(new LolEsportsScheduleBot());
+        } catch (TelegramApiException ex) {
+            log.error("Error instantiating bot");
         }
     }
 

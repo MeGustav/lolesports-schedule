@@ -1,5 +1,8 @@
 package com.megustav.lolesports.schedule.bot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
@@ -11,7 +14,9 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
  * @author MeGusav
  *         23.09.17 23:37
  */
-public class Bot extends TelegramLongPollingBot {
+public class LolEsportsScheduleBot extends TelegramLongPollingBot {
+
+    private static final Logger log = LoggerFactory.getLogger(LolEsportsScheduleBot.class);
 
     /** Bot Username */
     private static final String BOT_NAME = "LolEsportsScheduleBot";
@@ -29,15 +34,12 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (! update.hasMessage()) {
-            System.out.println("No message received");
+            log.debug("No message received");
             return;
         }
+
         Message received = update.getMessage();
-        System.out.println("[====]");
-        System.out.println("Message received");
-        System.out.println("User: " + received.getFrom().getFirstName() + " " + received.getFrom().getLastName());
-        System.out.println("Content: " + received.getText());
-        System.out.println("[====]");
+        log.info("Received message: {}", received);
         try {
 
             SendMessage message = new SendMessage()
@@ -45,9 +47,10 @@ public class Bot extends TelegramLongPollingBot {
                     .setText(received.getText().contains("Инн") ?
                             "Люблю тебя. Дай еще супа" :
                             "Not implemented yet");
-            sendMessage(message);
-        } catch (Exception e) {
-            e.printStackTrace();
+            log.debug("Prepared response: {}", message);
+            execute(message);
+        } catch (Exception ex) {
+            log.error("Error processing update", ex);
         }
     }
 
