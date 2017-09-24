@@ -1,1 +1,1 @@
-worker: sh heroku.sh
+worker: python ./tools/heroku.py
