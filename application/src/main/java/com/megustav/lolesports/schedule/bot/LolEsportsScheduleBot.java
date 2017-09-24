@@ -39,7 +39,7 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
         }
 
         Message received = update.getMessage();
-        log.info("Received message: {}", received);
+        log.debug("Received message: {}", received);
         try {
 
             SendMessage message = new SendMessage()
