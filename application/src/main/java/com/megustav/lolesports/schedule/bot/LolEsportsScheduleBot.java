@@ -7,8 +7,6 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
  * A telegram bot providing information on the upcoming competitive League of Legends events
  *
@@ -20,8 +18,6 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
     /** Logger */
     private static final Logger log = LoggerFactory.getLogger(LolEsportsScheduleBot.class);
 
-    /** Overall messages received */
-    private final AtomicLong received = new AtomicLong(0);
     /** Bot Username */
     private final String botName;
     /** Bot token */
@@ -39,7 +35,6 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        received.incrementAndGet();
         if (! update.hasMessage()) {
             log.debug("No message received");
             return;
@@ -49,10 +44,9 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
         log.debug("Received text: {}", content.getText());
         log.trace("Received data: {}", content);
         try {
-
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
-                    .setText("I've had enough! Already " + received.get() + " pointless messages!");
+                    .setText("Message received: '" + content.getText() + "'");
             log.debug("Prepared response: {}", message);
             execute(message);
         } catch (Exception ex) {

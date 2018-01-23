@@ -20,6 +20,8 @@
 
     <dependencySets>
         <dependencySet>
+            <!-- All dependencies are already included in app the jar -->
+            <useTransitiveDependencies>false</useTransitiveDependencies>
             <outputDirectory>/lib</outputDirectory>
         </dependencySet>
     </dependencySets>

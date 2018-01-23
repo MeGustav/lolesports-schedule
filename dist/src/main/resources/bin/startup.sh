@@ -1,2 +1,3 @@
 #!/bin/sh
-java -cp ../lib/*:../conf/ com.megustav.lolesports.schedule.Main
+OPTS="-Dloader.path=../conf,../lib"
+java $OPTS -jar ../lib/application*.jar

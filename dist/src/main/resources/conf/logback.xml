@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="false">
 
+    <!-- Disable logback's own status logging -->
     <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -18,19 +19,29 @@
             </Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- By setting the name to .gz here, we get free compression. -->
             <fileNamePattern>../logs/application.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="ROOT"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../logs/root.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>
+                %date{dd.MM.YYYY HH:mm:ss.SSS} [%-5level] - %msg%n
+            </Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>../logs/root.log.%d{yyyy-MM-dd}</fileNamePattern>
         </rollingPolicy>
     </appender>
 
     <logger name="com.megustav.lolesports" level="debug" additivity="false">
         <appender-ref ref="APPLICATION"/>
-        <!-- Heroku recognizes only std. Later exclude this from source code -->
-        <appender-ref ref="STDOUT"/>
     </logger>
 
     <root level="info">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ROOT"/>
     </root>
 
 </configuration>

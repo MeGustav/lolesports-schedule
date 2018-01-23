@@ -15,6 +15,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
         </dependency>
@@ -27,5 +35,28 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Repackaging jar -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.megustav.lolesports.schedule.Application</mainClass>
+                    <layout>ZIP</layout>
+                    <finalName>application</finalName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pack</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

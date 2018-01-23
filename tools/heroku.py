@@ -8,7 +8,7 @@ from subprocess import call
 Replacing placeholder properties with the real ones
 """
 def replaceprops(file):
-    with open(file,'r') as f:
+    with open(file, 'r') as f:
         newlines = []
         for line in f.readlines():
             newlines.append(line
