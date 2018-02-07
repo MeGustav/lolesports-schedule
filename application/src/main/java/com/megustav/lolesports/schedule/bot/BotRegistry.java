@@ -10,7 +10,7 @@ import org.telegram.telegrambots.generics.LongPollingBot;
 /**
  * Bean for bot initialization
  *
- * @author MeGusav
+ * @author MeGustav
  *         14/11/2017 22:15
  */
 public class BotRegistry {

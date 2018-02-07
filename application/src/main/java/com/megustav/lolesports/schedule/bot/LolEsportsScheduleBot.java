@@ -1,5 +1,8 @@
 package com.megustav.lolesports.schedule.bot;
 
+import com.megustav.lolesports.schedule.riot.League;
+import com.megustav.lolesports.schedule.riot.RiotApiClient;
+import com.megustav.lolesports.schedule.riot.data.ScheduleInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -10,7 +13,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 /**
  * A telegram bot providing information on the upcoming competitive League of Legends events
  *
- * @author MeGusav
+ * @author MeGustav
  *         23.09.17 23:37
  */
 public class LolEsportsScheduleBot extends TelegramLongPollingBot {
@@ -22,15 +25,13 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
     private final String botName;
     /** Bot token */
     private final String botToken;
+    /** Riot API client */
+    private final RiotApiClient apiClient;
 
-    public LolEsportsScheduleBot(String botName, String botToken) {
+    public LolEsportsScheduleBot(String botName, String botToken, RiotApiClient apiClient) {
         this.botName = botName;
         this.botToken = botToken;
-    }
-
-    @Override
-    public String getBotToken() {
-        return botToken;
+        this.apiClient = apiClient;
     }
 
     @Override
@@ -44,9 +45,10 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
         log.debug("Received text: {}", content.getText());
         log.trace("Received data: {}", content);
         try {
+            ScheduleInformation response = apiClient.getSchedule(League.NALCS);
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
-                    .setText("Message received: '" + content.getText() + "'");
+                    .setText("Scheduled items: " + response.getScheduleItems().size());
             log.debug("Prepared response: {}", message);
             execute(message);
         } catch (Exception ex) {
@@ -57,5 +59,10 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
         return botName;
+    }
+
+    @Override
+    public String getBotToken() {
+        return botToken;
     }
 }

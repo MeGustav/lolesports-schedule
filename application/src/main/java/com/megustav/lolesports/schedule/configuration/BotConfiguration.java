@@ -13,9 +13,9 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import javax.annotation.PostConstruct;
 
 /**
- * Schedule bot configuration
+ * Schedule bot beans configuration
  *
- * @author MeGusav
+ * @author MeGustav
  *         14/11/2017 21:27
  */
 @Configuration
@@ -26,10 +26,13 @@ public class BotConfiguration {
 
     /** Environment parameters */
     private final Environment env;
+    /** API configuration */
+    private final RiotApiConfiguration apiConfiguration;
 
     @Autowired
-    public BotConfiguration(Environment env) {
+    public BotConfiguration(Environment env, RiotApiConfiguration apiConfiguration) {
         this.env = env;
+        this.apiConfiguration = apiConfiguration;
     }
 
     /**
@@ -41,14 +44,24 @@ public class BotConfiguration {
         botRegistry().register(telegramBot());
     }
 
+    /**
+     * @return bot registry
+     */
     @Bean
     public BotRegistry botRegistry() {
         return new BotRegistry();
     }
 
+    /**
+     * @return telegram bot
+     */
     @Bean
     public TelegramLongPollingBot telegramBot() {
-        return new LolEsportsScheduleBot(env.getProperty("telegram.bot.name"), env.getProperty("telegram.bot.token"));
+        return new LolEsportsScheduleBot(
+                env.getProperty("telegram.bot.name"),
+                env.getProperty("telegram.bot.token"),
+                apiConfiguration.riotApiClient()
+        );
     }
 
 }

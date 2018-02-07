@@ -29,6 +29,25 @@
                 <artifactId>telegrambots</artifactId>
                 <version>3.3</version>
             </dependency>
+            <!-- Jersey -->
+            <!-- Using Jersey over CXF due to odd mutable nature of it's client -->
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>2.26</version>
+            </dependency>
+            <!-- Internal Jersey DI -->
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>2.26</version>
+            </dependency>
+            <!-- JAXRS specification -->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>2.1</version>
+            </dependency>
             <!-- Logging -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -40,6 +59,7 @@
                 <artifactId>logback-classic</artifactId>
                 <version>1.1.11</version>
             </dependency>
+            <!-- Misc -->
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>

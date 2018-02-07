@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * Application entry point
  *
- * @author MeGusav
+ * @author MeGustav
  *         14/11/2017 20:21
  */
 @SpringBootApplication(exclude = {
