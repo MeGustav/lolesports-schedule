@@ -1,14 +1,17 @@
 package com.megustav.lolesports.schedule.bot;
 
-import com.megustav.lolesports.schedule.riot.League;
-import com.megustav.lolesports.schedule.riot.RiotApiClient;
-import com.megustav.lolesports.schedule.riot.data.ScheduleInformation;
+import com.megustav.lolesports.schedule.processor.MessageProcessor;
+import com.megustav.lolesports.schedule.processor.ProcessorRepository;
+import com.megustav.lolesports.schedule.processor.ProcessorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.springframework.core.task.TaskExecutor;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
+
+import java.util.Optional;
 
 /**
  * A telegram bot providing information on the upcoming competitive League of Legends events
@@ -25,13 +28,19 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
     private final String botName;
     /** Bot token */
     private final String botToken;
-    /** Riot API client */
-    private final RiotApiClient apiClient;
+    /** Processor repository */
+    private final ProcessorRepository repository;
+    /** Task executor */
+    private final TaskExecutor executor;
 
-    public LolEsportsScheduleBot(String botName, String botToken, RiotApiClient apiClient) {
+    public LolEsportsScheduleBot(String botName,
+                                 String botToken,
+                                 TaskExecutor executor,
+                                 ProcessorRepository repository) {
         this.botName = botName;
         this.botToken = botToken;
-        this.apiClient = apiClient;
+        this.executor = executor;
+        this.repository = repository;
     }
 
     @Override
@@ -41,19 +50,36 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
             return;
         }
 
-        Message content = update.getMessage();
-        log.debug("Received text: {}", content.getText());
-        log.trace("Received data: {}", content);
-        try {
-            ScheduleInformation response = apiClient.getSchedule(League.NALCS);
-            SendMessage message = new SendMessage()
-                    .setChatId(update.getMessage().getChatId())
-                    .setText("Scheduled items: " + response.getScheduleItems().size());
-            log.debug("Prepared response: {}", message);
-            execute(message);
-        } catch (Exception ex) {
-            log.error("Error processing update", ex);
+        // Getting text message
+        Message message = update.getMessage();
+        String text = message.getText();
+        if (text == null) {
+            log.warn("No text received");
+            return;
         }
+
+        // Getting request type
+        Optional<ProcessorType> typeOpt = ProcessorType.fromRequest(text);
+        if (! typeOpt.isPresent()) {
+            log.warn("Unsupported processor type: {}", text);
+            return;
+        }
+
+        // Getting the actual processor
+        Optional<MessageProcessor> processorOpt = repository.getProcessor(typeOpt.get());
+        if (! processorOpt.isPresent()) {
+            log.warn("No processor registered for type: ", typeOpt.get());
+            return;
+        }
+
+        // Submitting task with bot callback
+        executor.execute(() -> {
+            try {
+                execute(processorOpt.get().processIncomingMessage(message));
+            } catch (TelegramApiException ex) {
+                log.error("Error processing message: {}", text, ex);
+            }
+        });
     }
 
     @Override
@@ -65,4 +91,5 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
     public String getBotToken() {
         return botToken;
     }
+
 }
