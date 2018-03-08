@@ -4,7 +4,7 @@ package com.megustav.lolesports.schedule.riot;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.megustav.lolesports.schedule.riot.data.ScheduleInformation;
+import com.megustav.lolesports.schedule.riot.mapping.ScheduleInformation;
 import org.glassfish.jersey.client.ClientConfig;
 
 import javax.ws.rs.client.Client;

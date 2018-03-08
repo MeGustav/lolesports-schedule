@@ -1,4 +1,4 @@
-package com.megustav.lolesports.schedule.riot.data;
+package com.megustav.lolesports.schedule.riot.mapping;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
