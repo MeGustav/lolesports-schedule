@@ -14,9 +14,9 @@ import java.util.stream.Stream;
 public enum League {
 
     /** NA */
-    NALCS(2, "na", "nalcs", "america"),
+    NALCS(2, "nalcs", "na", "america"),
     /** Europe */
-    EULCS(3, "eu", "eulcs", "europe"),
+    EULCS(3, "eulcs", "eu", "europe"),
     /** Korea */
     LCK(6, "lck", "ogn", "korea"),
     /** China */
@@ -26,16 +26,23 @@ public enum League {
 
     /** League id */
     private final int id;
+    /**  */
+    private final String officialName;
     /** League known aliases */
     private final Set<String> aliases;
     
-    League(int id, String... aliases) {
+    League(int id, String officialName, String... aliases) {
         this.id = id;
+        this.officialName = officialName;
         this.aliases = Stream.of(aliases).collect(Collectors.toSet());
     }
 
     public int getId() {
         return id;
+    }
+
+    public String getOfficialName() {
+        return officialName;
     }
 
     public Set<String> getAliases() {
@@ -50,7 +57,7 @@ public enum League {
      */
     public static Optional<League> fromAlias(String alias) {
         return Stream.of(values())
-                .filter(league -> league.getAliases().contains(alias))
+                .filter(league -> league.getOfficialName().equals(alias) || league.getAliases().contains(alias))
                 .findAny();
     }
 }

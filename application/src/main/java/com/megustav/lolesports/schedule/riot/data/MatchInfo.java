@@ -1,6 +1,6 @@
 package com.megustav.lolesports.schedule.riot.data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Match information
@@ -15,9 +15,9 @@ public class MatchInfo {
     /** Match name */
     private final String name;
     /** Match schedule time */
-    private final Date time;
+    private final LocalDateTime time;
 
-    public MatchInfo(String id, String name, Date time) {
+    public MatchInfo(String id, String name, LocalDateTime time) {
         this.id = id;
         this.name = name;
         this.time = time;
@@ -31,7 +31,7 @@ public class MatchInfo {
         return name;
     }
 
-    public Date getTime() {
+    public LocalDateTime getTime() {
         return time;
     }
 }

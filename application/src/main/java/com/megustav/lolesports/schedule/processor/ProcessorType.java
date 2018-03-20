@@ -11,6 +11,8 @@ import java.util.stream.Stream;
  */
 public enum ProcessorType {
 
+    /** Bot interaction start */
+    START("/start"),
     /** Full schedule on an upcoming/ongoing week */
     FULL_SCHEDULE("/full"),
     /** Current teams standings */

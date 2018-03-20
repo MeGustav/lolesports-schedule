@@ -1,12 +1,14 @@
 package com.megustav.lolesports.schedule.bot;
 
 import com.megustav.lolesports.schedule.processor.MessageProcessor;
+import com.megustav.lolesports.schedule.processor.ProcessingInfo;
 import com.megustav.lolesports.schedule.processor.ProcessorRepository;
 import com.megustav.lolesports.schedule.processor.ProcessorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.objects.CallbackQuery;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -63,24 +65,23 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
      * @param update update
      */
     private void processUpdate(Update update) throws TelegramApiException {
-        if (!update.hasMessage()) {
-            log.debug("No message received");
+        ProcessingInfo info = retrieveProcessingInfo(update);
+        if (info == null) {
+            log.error("Couldn't retrieve any processing information");
             return;
         }
 
-        // Getting text message
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
-        if (text == null) {
-            processError(chatId, "No text received");
+        Long chatId = info.getChatId();
+        String payload = info.getPayload();
+        if (payload == null) {
+            processError(chatId, "No payload received");
             return;
         }
 
         // Getting request type
-        Optional<ProcessorType> typeOpt = ProcessorType.fromRequest(text);
+        Optional<ProcessorType> typeOpt = ProcessorType.fromRequest(payload);
         if (!typeOpt.isPresent()) {
-            processError(chatId, "Unsupported processor type: " + text);
+            processError(chatId, "Unsupported processor type: " + payload);
             return;
         }
 
@@ -92,7 +93,25 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
         }
 
         // Sending response message
-        execute(processorOpt.get().processIncomingMessage(message));
+        execute(processorOpt.get().processIncomingMessage(info));
+    }
+
+    /**
+     * Retrieve processing information
+     *
+     * @param update update information
+     * @return processing information
+     */
+    private ProcessingInfo retrieveProcessingInfo(Update update) {
+        if (update.hasMessage()) {
+            Message message = update.getMessage();
+            return new ProcessingInfo(message.getChatId(), message.getText());
+        } else if (update.hasCallbackQuery()) {
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            return new ProcessingInfo(callbackQuery.getMessage().getChatId(), callbackQuery.getData());
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ import com.megustav.lolesports.schedule.bot.BotRegistry;
 import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
 import com.megustav.lolesports.schedule.processor.FullScheduleProcessor;
 import com.megustav.lolesports.schedule.processor.ProcessorRepository;
+import com.megustav.lolesports.schedule.processor.StartProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +97,14 @@ public class BotConfiguration {
     @Bean(initMethod = "init")
     public FullScheduleProcessor fullScheduleProcessor() {
         return new FullScheduleProcessor(apiConfiguration.riotApiClient(), processorRepository());
+    }
+
+    /**
+     * @return interaction start processor
+     */
+    @Bean(initMethod = "init")
+    public StartProcessor startProcessor() {
+        return new StartProcessor(processorRepository());
     }
 
 }

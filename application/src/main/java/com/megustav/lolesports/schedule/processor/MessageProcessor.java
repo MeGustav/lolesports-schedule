@@ -14,10 +14,10 @@ public interface MessageProcessor {
     /**
      * Process incoming message and form response
      *
-     * @param incoming incoming message
+     * @param processingInfo enough data to process a message
      * @return formed response
      */
-    BotApiMethod<Message> processIncomingMessage(Message incoming);
+    BotApiMethod<Message> processIncomingMessage(ProcessingInfo processingInfo);
 
     /**
      * @return processor type
