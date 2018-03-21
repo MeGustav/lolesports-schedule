@@ -9,4 +9,11 @@ jobs:
     steps:
       - checkout
       - run: mvn clean install
-
+      - deploy:
+          name: Deploy
+          command: |
+            ssh -oStrictHostKeyChecking=no -v $SERVER_USER@$SERVER_IP "rm -rf $DIST_PATH/*"
+            echo '--- Removed old dist ---'
+            scp -oStrictHostKeyChecking=no ~/repo/dist/target/distributive.zip $SERVER_USER@$SERVER_IP:$DIST_PATH/distributive.zip
+            echo '--- Copied new dist ---'
+            ssh -oStrictHostKeyChecking=no -v $SERVER_USER@$SERVER_IP "nohup python3 $DEPLOY_SCRIPTS_PATH/deploy.py $DIST_PATH/distributive.zip $APP_PATH $BOT_NAME $BOT_TOKEN &"
