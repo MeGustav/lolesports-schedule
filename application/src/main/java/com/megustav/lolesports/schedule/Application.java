@@ -6,6 +6,7 @@ import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -30,6 +31,7 @@ public class Application {
         info("Starting app...");
         new SpringApplicationBuilder(Application.class)
                 .bannerMode(Banner.Mode.OFF)
+                .listeners(new ApplicationPidFileWriter("application.pid"))
                 .run(args);
         info("App started");
     }
