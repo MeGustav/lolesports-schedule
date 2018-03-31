@@ -19,6 +19,10 @@ import javax.ws.rs.core.MediaType;
  */
 public class RiotApiClient {
 
+    /** Riot api schedule url */
+    private static final String SCHEDULE_URL =
+            "https://api.lolesports.com/api/v1/scheduleItems";
+
     /** HTTP-client */
     private final Client client;
 
@@ -38,9 +42,7 @@ public class RiotApiClient {
      * @return schedule for the specified league
      */
     public ScheduleInformation getSchedule(League league) {
-        return client.target("https://api.lolesports.com")
-                .path("api/v1")
-                .path("scheduleItems")
+        return client.target(SCHEDULE_URL)
                 .queryParam("leagueId", league.getId())
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .buildGet().invoke(ScheduleInformation.class);

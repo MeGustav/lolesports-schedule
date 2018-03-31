@@ -2,9 +2,10 @@ package com.megustav.lolesports.schedule.configuration;
 
 import com.megustav.lolesports.schedule.bot.BotRegistry;
 import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
-import com.megustav.lolesports.schedule.processor.FullScheduleProcessor;
+import com.megustav.lolesports.schedule.processor.UpcomingMatchesProcessor;
 import com.megustav.lolesports.schedule.processor.ProcessorRepository;
 import com.megustav.lolesports.schedule.processor.StartProcessor;
+import com.megustav.lolesports.schedule.riot.transformer.UpcomingMatchesTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,8 +96,12 @@ public class BotConfiguration {
      * @return processor returning full schedule
      */
     @Bean(initMethod = "init")
-    public FullScheduleProcessor fullScheduleProcessor() {
-        return new FullScheduleProcessor(apiConfiguration.riotApiClient(), processorRepository());
+    public UpcomingMatchesProcessor upcomingMatchesProcessor() {
+        return new UpcomingMatchesProcessor(
+                apiConfiguration.riotApiClient(),
+                processorRepository(),
+                upcomingMatchesTransformer()
+        );
     }
 
     /**
@@ -106,5 +111,14 @@ public class BotConfiguration {
     public StartProcessor startProcessor() {
         return new StartProcessor(processorRepository());
     }
+
+    /**
+     * @return upcoming matches transformer
+     */
+    @Bean
+    public UpcomingMatchesTransformer upcomingMatchesTransformer() {
+        return new UpcomingMatchesTransformer();
+    }
+
 
 }

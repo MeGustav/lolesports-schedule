@@ -19,14 +19,18 @@ public class TournamentInfo {
     private final String description;
     /** Tournament bracket */
     private final Map<String, Bracket> brackets;
+    /** Rosters competing in the tournament */
+    private final Map<String, Roster> rosters;
 
     @JsonCreator
     public TournamentInfo(@JsonProperty("id") String id,
                           @JsonProperty("description") String description,
-                          @JsonProperty("brackets") Map<String, Bracket> brackets) {
+                          @JsonProperty("brackets") Map<String, Bracket> brackets,
+                          @JsonProperty("rosters") Map<String, Roster> rosters) {
         this.id = id;
         this.description = description;
         this.brackets = brackets;
+        this.rosters = rosters;
     }
 
     public String getId() {
@@ -41,12 +45,17 @@ public class TournamentInfo {
         return brackets;
     }
 
+    public Map<String, Roster> getRosters() {
+        return rosters;
+    }
+
     @Override
     public String toString() {
         return "TournamentInfo{" +
                 "id='" + id + '\'' +
                 ", description='" + description + '\'' +
                 ", brackets=" + brackets +
+                ", rosters=" + rosters +
                 '}';
     }
 }

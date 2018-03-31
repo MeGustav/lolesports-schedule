@@ -93,7 +93,11 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
         }
 
         // Sending response message
-        execute(processorOpt.get().processIncomingMessage(info));
+        try {
+            execute(processorOpt.get().processIncomingMessage(info));
+        } catch (Exception ex) {
+            processError(chatId, "Internal error: " + ex.getMessage());
+        }
     }
 
     /**

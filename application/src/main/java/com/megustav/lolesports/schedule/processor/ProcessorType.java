@@ -14,11 +14,7 @@ public enum ProcessorType {
     /** Bot interaction start */
     START("/start"),
     /** Full schedule on an upcoming/ongoing week */
-    FULL_SCHEDULE("/full"),
-    /** Current teams standings */
-    STANDINGS("/standings"),
-    /** Closest matches to come */
-    IMMEDIATE_SCHEDULE("/immediate");
+    UPCOMING("/upcoming");
 
     /** Processor corresponding path */
     private String path;

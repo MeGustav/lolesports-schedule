@@ -11,6 +11,7 @@ import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,19 +46,18 @@ public class StartProcessor implements MessageProcessor {
 
     @Override
     public BotApiMethod<Message> processIncomingMessage(ProcessingInfo processingInfo) {
+        List<InlineKeyboardButton> buttons = Stream.of(League.values())
+                .map(league -> {
+                    String data = ProcessorType.UPCOMING.getPath() + " " + league.getOfficialName();
+                    String caption = league.getOfficialName().toUpperCase();
+                    return new InlineKeyboardButton(caption).setCallbackData(data);
+                })
+                .collect(Collectors.toList());
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup()
-                .setKeyboard(Collections.singletonList(
-                        Stream.of(League.values())
-                                .map(league -> {
-                                    String data = ProcessorType.FULL_SCHEDULE.getPath() + " " + league.getOfficialName();
-                                    String caption  = league.getOfficialName().toUpperCase();
-                                    return new InlineKeyboardButton(caption).setCallbackData(data);
-                                })
-                                .collect(Collectors.toList())
-                        ));
+                .setKeyboard(Collections.singletonList(buttons));
         return new SendMessage()
                 .setChatId(processingInfo.getChatId())
-                .setText("Full schedule for:").setReplyMarkup(markup)
+                .setText("Upcoming matches for:").setReplyMarkup(markup)
                 .setReplyMarkup(markup);
     }
 }

@@ -4,10 +4,8 @@ import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
 import com.megustav.lolesports.schedule.riot.League;
 import com.megustav.lolesports.schedule.riot.RiotApiClient;
 import com.megustav.lolesports.schedule.riot.data.MatchInfo;
-import com.megustav.lolesports.schedule.riot.mapping.Bracket;
 import com.megustav.lolesports.schedule.riot.mapping.ScheduleInformation;
-import com.megustav.lolesports.schedule.riot.mapping.ScheduleItem;
-import com.megustav.lolesports.schedule.riot.mapping.TournamentInfo;
+import com.megustav.lolesports.schedule.riot.transformer.UpcomingMatchesTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
@@ -17,13 +15,12 @@ import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.megustav.lolesports.schedule.bot.MessageUtils.consumeMessage;
 
@@ -33,11 +30,16 @@ import static com.megustav.lolesports.schedule.bot.MessageUtils.consumeMessage;
  * @author MeGustav
  *         15/02/2018 22:09
  */
-public class FullScheduleProcessor implements MessageProcessor {
+public class UpcomingMatchesProcessor implements MessageProcessor {
 
-    /**  */
+    /** Named events */
+    private final Set<String> MAIN_EVENTS =
+            Stream.of("quarterfinal", "semifinal", "grand-final", "third-place")
+                    .collect(Collectors.toSet());
+
+    /** Message pattern */
     private static final Pattern MESSAGE_PATTERN =
-            Pattern.compile(ProcessorType.FULL_SCHEDULE.getPath() + "\\s(?<league>\\w+).*");
+            Pattern.compile(ProcessorType.UPCOMING.getPath() + "\\s(?<league>\\w+).*");
 
     /** Logger */
     private static final Logger log = LoggerFactory.getLogger(LolEsportsScheduleBot.class);
@@ -45,10 +47,15 @@ public class FullScheduleProcessor implements MessageProcessor {
     private final RiotApiClient apiClient;
     /** Processor repository */
     private final ProcessorRepository repository;
+    /** Upcoming matches transformer */
+    private final UpcomingMatchesTransformer transformer;
 
-    public FullScheduleProcessor(RiotApiClient apiClient, ProcessorRepository repository) {
+    public UpcomingMatchesProcessor(RiotApiClient apiClient,
+                                    ProcessorRepository repository,
+                                    UpcomingMatchesTransformer transformer) {
         this.apiClient = apiClient;
         this.repository = repository;
+        this.transformer = transformer;
     }
 
     /**
@@ -60,7 +67,7 @@ public class FullScheduleProcessor implements MessageProcessor {
 
     @Override
     public ProcessorType getType() {
-        return ProcessorType.FULL_SCHEDULE;
+        return ProcessorType.UPCOMING;
     }
 
     /**
@@ -95,27 +102,12 @@ public class FullScheduleProcessor implements MessageProcessor {
         // For now just getting the schedule by http request.
         // Obviously this kind of info is to be persisted
         ScheduleInformation schedule = apiClient.getSchedule(leagueOpt.get());
+        // Transforming data into convenient form
+        Map<LocalDate, List<MatchInfo>> matches = transformer.transform(schedule);
+        // Forming message payload
+        String responsePayload = formMessagePayload(leagueOpt.get(), matches);
 
-
-        List<MatchInfo> matchList = getMatchesToSend(schedule);
-        Map<LocalDate, List<MatchInfo>> result = matchList.stream()
-                .collect(Collectors.groupingBy(info -> info.getTime().toLocalDate()));
-
-        StringBuilder sb = new StringBuilder()
-                .append(wrapped(leagueOpt.get().getOfficialName().toUpperCase(), '*'))
-                .append("\n\n");
-        for (Map.Entry<LocalDate, List<MatchInfo>> entry : result.entrySet()) {
-            sb.append(wrapped(entry.getKey().format(DateTimeFormatter.ISO_DATE), '*'))
-                    .append("\n");
-            for (MatchInfo info : entry.getValue()) {
-                sb.append(wrapped(info.getTime().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME), '`'))
-                        .append("\t")
-                        .append(info.getName())
-                        .append("\n");
-            }
-        }
-
-        SendMessage response = new SendMessage(chatId, sb.toString()).enableMarkdown(true);
+        SendMessage response = new SendMessage(chatId, responsePayload).enableMarkdown(true);
         appendFooter(response);
 
         consumeMessage(log::debug, chatId, "Prepared response: " + response);
@@ -125,33 +117,32 @@ public class FullScheduleProcessor implements MessageProcessor {
     }
 
     /**
-     * Filtering the schedule and forming outgoing message
-     * This as well is to be annihilated when persistence is implemented
-     * TODO persistent data
+     * Form message payload
      *
-     * @param schedule schedule information
-     * @return list of matches to be sent
+     * @param league league
+     * @param matches matches info
+     * @return message payload
      */
-    private List<MatchInfo> getMatchesToSend(ScheduleInformation schedule) {
-        List<MatchInfo> matchList = new ArrayList<>();
-        Comparator<ScheduleItem> comparator = Comparator.comparing(ScheduleItem::getTime);
-        schedule.getScheduleItems().stream()
-                .filter(item -> item.getTime().after(new Date()))
-                .sorted(comparator)
-                .limit(10)
-                .forEach(item -> schedule.getTournaments().stream()
-                        .filter(tournament -> Objects.equals(tournament.getId(), item.getTournament()))
-                        .map(TournamentInfo::getBrackets)
-                        .filter(brackets -> brackets.containsKey(item.getBracket()))
-                        .map(brackets -> brackets.get(item.getBracket()))
-                        .map(Bracket::getMatches)
-                        .filter(matches -> matches.containsKey(item.getMatch()))
-                        .map(matches -> matches.get(item.getMatch()))
-                        .forEach(match -> matchList.add(new MatchInfo(
-                                match.getId(),
-                                match.getName(),
-                                LocalDateTime.ofInstant(item.getTime().toInstant(), ZoneId.systemDefault())))));
-        return matchList;
+    private String formMessagePayload(League league, Map<LocalDate, List<MatchInfo>> matches) {
+        StringBuilder sb = new StringBuilder()
+                .append(wrapped(league.getOfficialName().toUpperCase(), '*'))
+                .append("\n\n");
+        for (Map.Entry<LocalDate, List<MatchInfo>> entry : matches.entrySet()) {
+            sb.append(wrapped(entry.getKey().format(DateTimeFormatter.ISO_DATE), '*'))
+                    .append("\n");
+            for (MatchInfo info : entry.getValue()) {
+                sb.append(wrapped(info.getTime().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME), '`'))
+                        .append("\t");
+                String matchName = info.getName();
+                if (matchName != null && isMainEvent(matchName)) {
+                    sb.append(matchName.toUpperCase())
+                            .append("\t");
+                }
+                sb.append(info.getTeams().stream().collect(Collectors.joining(" vs ")))
+                        .append("\n");
+            }
+        }
+        return sb.toString();
     }
 
     /**
@@ -164,6 +155,17 @@ public class FullScheduleProcessor implements MessageProcessor {
                 .setKeyboard(Collections.singletonList(Collections.singletonList(
                         new InlineKeyboardButton("Back").setCallbackData(ProcessorType.START.getPath())
                 ))));
+    }
+
+    /**
+     * Determine whether or not event is main
+     *
+     * @param name event name
+     * @return whether or not event is main
+     */
+    private boolean isMainEvent(String name) {
+        return MAIN_EVENTS.stream()
+                .anyMatch(event -> name.contains(event));
     }
 
     /**

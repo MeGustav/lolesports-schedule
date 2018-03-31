@@ -2,29 +2,24 @@ package com.megustav.lolesports.schedule.riot.mapping;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
 
 /**
- * Matches information
+ * Roster information represented in tournament information
  *
  * @author MeGustav
- *         25/01/2018 22:57
+ *         31/03/2018 16:07
  */
-public class Match {
+public class Roster {
 
-    /** Match id */
+    /** Roster id */
     private final String id;
-    /** Match name */
+    /** Roster (team) name */
     private final String name;
-    /** Rosters */
-    private final List<MatchRoster> rosters;
 
     @JsonCreator
-    public Match(@JsonProperty("id") String id,
-                 @JsonProperty("name") String name,
-                 @JsonProperty("input") List<MatchRoster> rosters) {
+    public Roster(@JsonProperty("id") String id,
+                  @JsonProperty("name") String name) {
         this.id = id;
-        this.rosters = rosters;
         this.name = name;
     }
 
@@ -36,16 +31,11 @@ public class Match {
         return name;
     }
 
-    public List<MatchRoster> getRosters() {
-        return rosters;
-    }
-
     @Override
     public String toString() {
-        return "Match{" +
+        return "Roster{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", rosters=" + rosters +
                 '}';
     }
 }
