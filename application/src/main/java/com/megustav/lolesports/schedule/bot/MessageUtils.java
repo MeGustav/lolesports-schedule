@@ -1,6 +1,5 @@
 package com.megustav.lolesports.schedule.bot;
 
-import java.text.MessageFormat;
 import java.util.function.Consumer;
 
 /**
@@ -23,16 +22,24 @@ public final class MessageUtils {
     }
 
     /**
+     * Forms chat id prefix
+     *
+     * @param chatId chat id
+     * @return prefix with chat id
+     */
+    public static String formChatPrefix(Long chatId) {
+        return "[" + (chatId == null ? "unknown" : chatId) + "]";
+    }
+
+    /**
      * Forms a chat-specific log message
      *
      * @param chatId chat id
      * @param text text
      * @return a chat-specific log message
      */
-    public static String formChatMessage(Long chatId, String text) {
-        return chatId == null ?
-                "[unknown] " + text :
-                MessageFormat.format("[{0}] {1}", chatId.toString(), text);
+    private static String formChatMessage(Long chatId, String text) {
+        return formChatPrefix(chatId) + " " + text;
     }
 
     /** Utility class - instantiation restricted */

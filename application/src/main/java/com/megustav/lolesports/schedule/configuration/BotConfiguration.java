@@ -2,10 +2,6 @@ package com.megustav.lolesports.schedule.configuration;
 
 import com.megustav.lolesports.schedule.bot.BotRegistry;
 import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
-import com.megustav.lolesports.schedule.processor.UpcomingMatchesProcessor;
-import com.megustav.lolesports.schedule.processor.ProcessorRepository;
-import com.megustav.lolesports.schedule.processor.StartProcessor;
-import com.megustav.lolesports.schedule.riot.transformer.UpcomingMatchesTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +21,7 @@ import javax.annotation.PostConstruct;
  *         14/11/2017 21:27
  */
 @Configuration
-@Import(RiotApiConfiguration.class)
+@Import(ProcessorConfiguration.class)
 public class BotConfiguration {
 
     /** Logger */
@@ -33,13 +29,14 @@ public class BotConfiguration {
 
     /** Environment parameters */
     private final Environment env;
-    /** API configuration */
-    private final RiotApiConfiguration apiConfiguration;
+    /** Processor configuration */
+    private final ProcessorConfiguration processorConfiguration;
 
     @Autowired
-    public BotConfiguration(Environment env, RiotApiConfiguration apiConfiguration) {
+    public BotConfiguration(Environment env,
+                            ProcessorConfiguration processorConfiguration) {
         this.env = env;
-        this.apiConfiguration = apiConfiguration;
+        this.processorConfiguration = processorConfiguration;
     }
 
     /**
@@ -68,7 +65,7 @@ public class BotConfiguration {
                 env.getProperty("telegram.bot.name"),
                 env.getProperty("telegram.bot.token"),
                 taskExecutor(),
-                processorRepository()
+                processorConfiguration.processorRepository()
         );
     }
 
@@ -83,42 +80,5 @@ public class BotConfiguration {
         executor.setMaxPoolSize(10);
         return executor;
     }
-
-    /**
-     * @return processor repository
-     */
-    @Bean
-    public ProcessorRepository processorRepository() {
-        return new ProcessorRepository();
-    }
-
-    /**
-     * @return processor returning full schedule
-     */
-    @Bean(initMethod = "init")
-    public UpcomingMatchesProcessor upcomingMatchesProcessor() {
-        return new UpcomingMatchesProcessor(
-                apiConfiguration.riotApiClient(),
-                processorRepository(),
-                upcomingMatchesTransformer()
-        );
-    }
-
-    /**
-     * @return interaction start processor
-     */
-    @Bean(initMethod = "init")
-    public StartProcessor startProcessor() {
-        return new StartProcessor(processorRepository());
-    }
-
-    /**
-     * @return upcoming matches transformer
-     */
-    @Bean
-    public UpcomingMatchesTransformer upcomingMatchesTransformer() {
-        return new UpcomingMatchesTransformer();
-    }
-
 
 }

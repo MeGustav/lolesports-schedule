@@ -17,7 +17,7 @@ public interface MessageProcessor {
      * @param processingInfo enough data to process a message
      * @return formed response
      */
-    BotApiMethod<Message> processIncomingMessage(ProcessingInfo processingInfo);
+    BotApiMethod<Message> processIncomingMessage(ProcessingInfo processingInfo) throws Exception;
 
     /**
      * @return processor type

@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,7 +63,7 @@ public class UpcomingMatchesTransformer {
                 // Filtering out invalid data
                 .filter(item -> Objects.nonNull(item.getTournament()))
                 .filter(item -> Objects.nonNull(item.getBracket()))
-                .filter(item -> Objects.nonNull(item.getBracket()))
+                .filter(item -> Objects.nonNull(item.getMatch()))
                 .limit(MATCHES_LIMIT)
                 .collect(Collectors.toList());
         for (ScheduleItem item : items) {
@@ -94,7 +94,7 @@ public class UpcomingMatchesTransformer {
                     item.getMatch(),
                     match.getName(),
                     retrieveTeams(match, tournament),
-                    LocalDateTime.ofInstant(item.getTime().toInstant(), ZoneId.systemDefault())
+                    ZonedDateTime.ofInstant(item.getTime().toInstant(), ZoneId.systemDefault())
             ));
         }
         return matches;

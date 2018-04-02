@@ -74,21 +74,21 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
         Long chatId = info.getChatId();
         String payload = info.getPayload();
         if (payload == null) {
-            processError(chatId, "No payload received");
+            processBusinessError(chatId, "No payload received");
             return;
         }
 
         // Getting request type
         Optional<ProcessorType> typeOpt = ProcessorType.fromRequest(payload);
         if (!typeOpt.isPresent()) {
-            processError(chatId, "Unsupported processor type: " + payload);
+            processBusinessError(chatId, "Unsupported processor type: " + payload);
             return;
         }
 
         // Getting the actual processor
         Optional<MessageProcessor> processorOpt = repository.getProcessor(typeOpt.get());
         if (!processorOpt.isPresent()) {
-            processError(chatId, "No processor registered for type: " + typeOpt.get());
+            processBusinessError(chatId, "No processor registered for type: " + typeOpt.get());
             return;
         }
 
@@ -96,7 +96,8 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
         try {
             execute(processorOpt.get().processIncomingMessage(info));
         } catch (Exception ex) {
-            processError(chatId, "Internal error: " + ex.getMessage());
+            log.error("{} Error processing message", MessageUtils.formChatPrefix(chatId), ex);
+            execute(new SendMessage(chatId, "Internal server error"));
         }
     }
 
@@ -124,8 +125,8 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
      * @param chatId chat id
      * @param errorMessage error message
      */
-    private void processError(Long chatId, String errorMessage) throws TelegramApiException {
-        MessageUtils.consumeMessage(log::debug, chatId, errorMessage);
+    private void processBusinessError(Long chatId, String errorMessage) throws TelegramApiException {
+        MessageUtils.consumeMessage(log::error, chatId, errorMessage);
         execute(new SendMessage(chatId, errorMessage));
     }
 

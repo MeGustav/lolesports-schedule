@@ -6,6 +6,9 @@ import com.megustav.lolesports.schedule.riot.RiotApiClient;
 import com.megustav.lolesports.schedule.riot.data.MatchInfo;
 import com.megustav.lolesports.schedule.riot.mapping.ScheduleInformation;
 import com.megustav.lolesports.schedule.riot.transformer.UpcomingMatchesTransformer;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
@@ -14,13 +17,12 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.megustav.lolesports.schedule.bot.MessageUtils.consumeMessage;
 
@@ -31,11 +33,6 @@ import static com.megustav.lolesports.schedule.bot.MessageUtils.consumeMessage;
  *         15/02/2018 22:09
  */
 public class UpcomingMatchesProcessor implements MessageProcessor {
-
-    /** Named events */
-    private final Set<String> MAIN_EVENTS =
-            Stream.of("quarterfinal", "semifinal", "grand-final", "third-place")
-                    .collect(Collectors.toSet());
 
     /** Message pattern */
     private static final Pattern MESSAGE_PATTERN =
@@ -49,13 +46,17 @@ public class UpcomingMatchesProcessor implements MessageProcessor {
     private final ProcessorRepository repository;
     /** Upcoming matches transformer */
     private final UpcomingMatchesTransformer transformer;
+    /** Parsed template for forming messages */
+    private final Template messageTemplate;
 
     public UpcomingMatchesProcessor(RiotApiClient apiClient,
                                     ProcessorRepository repository,
-                                    UpcomingMatchesTransformer transformer) {
+                                    UpcomingMatchesTransformer transformer,
+                                    Configuration configuration) throws IOException {
         this.apiClient = apiClient;
         this.repository = repository;
         this.transformer = transformer;
+        this.messageTemplate = configuration.getTemplate("upcoming.ftl");
     }
 
     /**
@@ -76,7 +77,8 @@ public class UpcomingMatchesProcessor implements MessageProcessor {
      * @param processingInfo incoming message
      */
     @Override
-    public BotApiMethod<Message> processIncomingMessage(ProcessingInfo processingInfo) {
+    public BotApiMethod<Message> processIncomingMessage(ProcessingInfo processingInfo)
+            throws IOException, TemplateException {
         long start = System.currentTimeMillis();
         long chatId = processingInfo.getChatId();
 
@@ -123,26 +125,15 @@ public class UpcomingMatchesProcessor implements MessageProcessor {
      * @param matches matches info
      * @return message payload
      */
-    private String formMessagePayload(League league, Map<LocalDate, List<MatchInfo>> matches) {
-        StringBuilder sb = new StringBuilder()
-                .append(wrapped(league.getOfficialName().toUpperCase(), '*'))
-                .append("\n\n");
-        for (Map.Entry<LocalDate, List<MatchInfo>> entry : matches.entrySet()) {
-            sb.append(wrapped(entry.getKey().format(DateTimeFormatter.ISO_DATE), '*'))
-                    .append("\n");
-            for (MatchInfo info : entry.getValue()) {
-                sb.append(wrapped(info.getTime().toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME), '`'))
-                        .append("\t");
-                String matchName = info.getName();
-                if (matchName != null && isMainEvent(matchName)) {
-                    sb.append(matchName.toUpperCase())
-                            .append("\t");
-                }
-                sb.append(info.getTeams().stream().collect(Collectors.joining(" vs ")))
-                        .append("\n");
-            }
+    private String formMessagePayload(League league, Map<LocalDate, List<MatchInfo>> matches)
+            throws IOException, TemplateException {
+        Map<String, Object> params = new HashMap<>();
+        params.put("leagueName", league);
+        params.put("schedule", matches);
+        try (StringWriter out = new StringWriter()) {
+            messageTemplate.process(params, out);
+            return out.toString();
         }
-        return sb.toString();
     }
 
     /**
@@ -155,28 +146,6 @@ public class UpcomingMatchesProcessor implements MessageProcessor {
                 .setKeyboard(Collections.singletonList(Collections.singletonList(
                         new InlineKeyboardButton("Back").setCallbackData(ProcessorType.START.getPath())
                 ))));
-    }
-
-    /**
-     * Determine whether or not event is main
-     *
-     * @param name event name
-     * @return whether or not event is main
-     */
-    private boolean isMainEvent(String name) {
-        return MAIN_EVENTS.stream()
-                .anyMatch(event -> name.contains(event));
-    }
-
-    /**
-     * Forms a wrapped in a symbol text
-     *
-     * @param text text
-     * @param symbol symbol to wrap the text
-     * @return wrapped text
-     */
-    private String wrapped(String text, char symbol) {
-        return symbol + text + symbol;
     }
 
 }

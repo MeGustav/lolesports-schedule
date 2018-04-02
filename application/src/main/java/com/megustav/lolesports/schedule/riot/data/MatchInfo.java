@@ -1,6 +1,6 @@
 package com.megustav.lolesports.schedule.riot.data;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 /**
@@ -18,9 +18,9 @@ public class MatchInfo {
     /** Teams */
     private final Set<String> teams;
     /** Match schedule time */
-    private final LocalDateTime time;
+    private final ZonedDateTime time;
 
-    public MatchInfo(String id, String name, Set<String> teams, LocalDateTime time) {
+    public MatchInfo(String id, String name, Set<String> teams, ZonedDateTime time) {
         this.id = id;
         this.name = name;
         this.teams = teams;
@@ -35,7 +35,7 @@ public class MatchInfo {
         return name;
     }
 
-    public LocalDateTime getTime() {
+    public ZonedDateTime getTime() {
         return time;
     }
 
