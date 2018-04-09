@@ -3,7 +3,7 @@ package com.megustav.lolesports.schedule.configuration;
 import com.megustav.lolesports.schedule.processor.ProcessorRepository;
 import com.megustav.lolesports.schedule.processor.StartProcessor;
 import com.megustav.lolesports.schedule.processor.UpcomingMatchesProcessor;
-import com.megustav.lolesports.schedule.riot.transformer.UpcomingMatchesTransformer;
+import com.megustav.lolesports.schedule.transformer.UpcomingMatchesTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

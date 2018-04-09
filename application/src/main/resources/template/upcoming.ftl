@@ -34,9 +34,7 @@
     </#list>
     <#return fullName/>
 </#function>
-
 <#-- Message itself -->
-
 *${leagueName}*
 
 <#list schedule?keys as key>
@@ -44,5 +42,8 @@
 <#list schedule?values[key_index] as match>
     `${match.getTime().format("HH:mmX")}` - ${formFullName(match.getName(), match.getTeams())}
 </#list>
+<#-- Adding a blank line untill the last date -->
+<#if key_index < schedule?size - 1>
 
+</#if>
 </#list>

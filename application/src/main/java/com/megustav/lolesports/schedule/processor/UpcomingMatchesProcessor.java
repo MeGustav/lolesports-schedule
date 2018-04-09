@@ -5,7 +5,7 @@ import com.megustav.lolesports.schedule.riot.League;
 import com.megustav.lolesports.schedule.riot.RiotApiClient;
 import com.megustav.lolesports.schedule.riot.data.MatchInfo;
 import com.megustav.lolesports.schedule.riot.mapping.ScheduleInformation;
-import com.megustav.lolesports.schedule.riot.transformer.UpcomingMatchesTransformer;
+import com.megustav.lolesports.schedule.transformer.UpcomingMatchesTransformer;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;

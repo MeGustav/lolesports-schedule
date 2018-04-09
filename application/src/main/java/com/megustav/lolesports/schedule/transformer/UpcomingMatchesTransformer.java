@@ -1,4 +1,4 @@
-package com.megustav.lolesports.schedule.riot.transformer;
+package com.megustav.lolesports.schedule.transformer;
 
 import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
 import com.megustav.lolesports.schedule.riot.data.MatchInfo;

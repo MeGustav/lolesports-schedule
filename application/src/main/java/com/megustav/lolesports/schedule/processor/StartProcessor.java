@@ -1,9 +1,6 @@
 package com.megustav.lolesports.schedule.processor;
 
-import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
 import com.megustav.lolesports.schedule.riot.League;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
@@ -23,8 +20,6 @@ import java.util.stream.Stream;
  */
 public class StartProcessor implements MessageProcessor {
 
-    /** Logger */
-    private static final Logger log = LoggerFactory.getLogger(LolEsportsScheduleBot.class);
     /** Processor repository */
     private final ProcessorRepository repository;
 
@@ -57,7 +52,7 @@ public class StartProcessor implements MessageProcessor {
                 .setKeyboard(Collections.singletonList(buttons));
         return new SendMessage()
                 .setChatId(processingInfo.getChatId())
-                .setText("Upcoming matches for:").setReplyMarkup(markup)
+                .setText("Upcoming matches for:")
                 .setReplyMarkup(markup);
     }
 }
