@@ -24,6 +24,10 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,8 +83,21 @@ public class TestUpcomingMatchesProcessor {
                 .isTrue();
 
         SendMessage sendMessage = SendMessage.class.cast(preparedMethod);
+        // TODO get better at Java8 Date and Time API, it's embarrassing
+        // Getting the time with correct time zone
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mmXX");
+        // Local time
+        LocalTime localTime = LocalTime.of(10, 10);
+        // Current zone offset
+        ZoneOffset offset = OffsetTime.now().getOffset();
+        // Adjusting time to UTC
+        String time = OffsetTime.of(localTime, ZoneOffset.UTC)
+                .withOffsetSameInstant(offset)
+                .format(formatter);
         String expectedPayload = IOUtils.toString(TestUpcomingMatchesProcessor.class
-                .getResource("/upcoming/base-bot-response.markdown"), StandardCharsets.UTF_8);
+                .getResource("/upcoming/base-bot-response.markdown"), StandardCharsets.UTF_8)
+                // Swapping placeholders with correctly zoned time
+                .replace("$TIME$", time);
         assertThat(sendMessage.getText()).as("Message text").isEqualTo(expectedPayload);
 
         ReplyKeyboard replyMarkup = sendMessage.getReplyMarkup();

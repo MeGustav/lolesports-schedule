@@ -1,7 +1,7 @@
 *EULCS*
 
 *2100-10-10*
-    `13:10+03` - *Team2* vs *Team1*
+    `$TIME$` - *Team2* vs *Team1*
 
 *2100-10-11*
-    `13:10+03` - *Team4* vs *Team3*
+    `$TIME$` - *Team4* vs *Team3*
