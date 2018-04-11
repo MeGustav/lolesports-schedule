@@ -7,8 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,9 +59,10 @@ public class UpcomingMatchesTransformer {
      */
     private List<MatchInfo> retrieveMatches(ScheduleInformation schedule) {
         List<MatchInfo> matches = new ArrayList<>();
-        Date today = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        ZonedDateTime now = ZonedDateTime.ofInstant(new Date().toInstant(), ZoneOffset.UTC)
+                .truncatedTo(ChronoUnit.DAYS);
         List<ScheduleItem> items = schedule.getScheduleItems().stream()
-                .filter(item -> item.getTime().after(today))
+                .filter(item -> ZonedDateTime.ofInstant(item.getTime().toInstant(), ZoneOffset.UTC).isAfter(now))
                 // Filtering out invalid data
                 .filter(item -> Objects.nonNull(item.getTournament()))
                 .filter(item -> Objects.nonNull(item.getBracket()))
@@ -94,7 +97,7 @@ public class UpcomingMatchesTransformer {
                     item.getMatch(),
                     match.getName(),
                     retrieveTeams(match, tournament),
-                    ZonedDateTime.ofInstant(item.getTime().toInstant(), ZoneId.systemDefault())
+                    LocalDateTime.ofInstant(item.getTime().toInstant(), ZoneOffset.UTC)
             ));
         }
         return matches;
