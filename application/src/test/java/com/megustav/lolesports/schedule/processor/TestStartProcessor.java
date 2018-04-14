@@ -1,12 +1,10 @@
 package com.megustav.lolesports.schedule.processor;
 
-import com.megustav.lolesports.schedule.configuration.ProcessorConfiguration;
 import com.megustav.lolesports.schedule.riot.League;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
@@ -26,14 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author MeGustav
  *         10/04/2018 00:25
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = ProcessorConfiguration.class)
+@RunWith(MockitoJUnitRunner.class)
 public class TestStartProcessor {
 
-    /** Processor repository */
-    @Autowired
-    private ProcessorRepository repository;
-
+    /** Tested object */
+    private final StartProcessor processor = new StartProcessor(
+            Mockito.mock(ProcessorRepository.class)
+    );
+    
     /**
      * Test whether {@link ProcessorType#START} produces correct {@link BotApiMethod}
      *
@@ -41,10 +39,9 @@ public class TestStartProcessor {
      * in order to check the outcome
      */
     @Test
-    public void testStartProcessor() throws Exception {
-        BotApiMethod<Message> preparedMethod = repository.getProcessor(ProcessorType.START)
-                .orElseThrow(() -> new IllegalStateException("START processor not found"))
-                .processIncomingMessage(new ProcessingInfo(1L, null));
+    public void testStartProcessor() {
+        BotApiMethod<Message> preparedMethod = 
+                processor.processIncomingMessage(new ProcessingInfo(1L, null));
         assertThat(SendMessage.class.isInstance(preparedMethod))
                 .as("START processor produces a SendMessage instance")
                 .isTrue();

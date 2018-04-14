@@ -43,10 +43,10 @@ public class TestUpcomingMatchesProcessor {
     private static final ObjectReader READER = new ObjectMapper()
             .readerFor(ScheduleInformation.class);
 
-    /** Processor repository */
+    /** Tested object */
     @Autowired
-    private ProcessorRepository repository;
-
+    private UpcomingMatchesProcessor processor;    
+    
     /** Mocked Riot API client */
     @MockBean
     private RiotApiClient client;
@@ -63,8 +63,6 @@ public class TestUpcomingMatchesProcessor {
                 TestUpcomingMatchesProcessor.class.getResource("/upcoming/base-riot-response.json"));
         Mockito.when(client.getSchedule(Mockito.any())).thenReturn(response);
 
-        MessageProcessor processor = repository.getProcessor(ProcessorType.UPCOMING)
-                .orElseThrow(() -> new IllegalStateException("UPCOMING processor not found"));
         BotApiMethod<Message> preparedMethod = processor.processIncomingMessage(
                 new ProcessingInfo(1L, "/upcoming " + League.EULCS.getOfficialName()));
         assertThat(SendMessage.class.isInstance(preparedMethod))
@@ -93,8 +91,6 @@ public class TestUpcomingMatchesProcessor {
                 TestUpcomingMatchesProcessor.class.getResource("/upcoming/empty-schedule-riot-response.json"));
         Mockito.when(client.getSchedule(Mockito.any())).thenReturn(response);
 
-        MessageProcessor processor = repository.getProcessor(ProcessorType.UPCOMING)
-                .orElseThrow(() -> new IllegalStateException("UPCOMING processor not found"));
         BotApiMethod<Message> preparedMethod = processor.processIncomingMessage(
                 new ProcessingInfo(1L, "/upcoming " + League.NALCS.getOfficialName()));
         assertThat(SendMessage.class.isInstance(preparedMethod))
