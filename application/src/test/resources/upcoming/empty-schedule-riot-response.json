@@ -1,0 +1,63 @@
+{
+  "scheduleItems": [
+    {
+      "tournament": "tournament",
+      "bracket": "bracket",
+      "match": "match1",
+      "scheduledTime": "1999-10-10T10:10:10.111Z"
+    },
+    {
+      "tournament": "tournament",
+      "bracket": "bracket",
+      "match": "match2",
+      "scheduledTime": "1999-10-11T10:10:10.111Z"
+    }
+  ],
+  "highlanderTournaments": [
+    {
+      "id": "tournament",
+      "description": "Main tournament",
+      "rosters": {
+        "roster1": {
+          "id": "roster1",
+          "name": "Team1"
+        },
+        "roster2": {
+          "id": "roster2",
+          "name": "Team2"
+        },
+        "roster3": {
+          "id": "roster3",
+          "name": "Team3"
+        },
+        "roster4": {
+          "id": "roster4",
+          "name": "Team4"
+        }
+      },
+      "brackets": {
+        "bracket": {
+          "id": "bracket",
+          "matches": {
+            "match1": {
+              "id": "match1",
+              "name": "Match number 1",
+              "input": [
+                { "id": "roster1" },
+                { "id": "roster2" }
+              ]
+            },
+            "match2": {
+              "id": "match2",
+              "name": "Match number 2",
+              "input": [
+                { "id": "roster3" },
+                { "id": "roster4" }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -37,13 +37,18 @@
 <#-- Message itself -->
 *${leagueName}*
 
-<#list schedule?keys as key>
+<#if schedule?keys?size == 0>
+Split/Season is over.  
+No new schedule yet.
+<#else>
+    <#list schedule?keys as key>
 *${key}*
-<#list schedule?values[key_index] as match>
+    <#list schedule?values[key_index] as match>
     `${match.getTime().format("HH:mm")} (UTC)` - ${formFullName(match.getName(), match.getTeams())}
-</#list>
-<#-- Adding a blank line untill the last date -->
-<#if key_index < schedule?size - 1>
+    </#list>
+    <#-- Adding a blank line untill the last date -->
+    <#if key_index < schedule?size - 1>
 
-</#if>
+    </#if>
 </#list>
+</#if>
