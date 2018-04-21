@@ -27,7 +27,7 @@ public class ProcessorRepository {
      *
      * @param processor processor
      */
-    void register(MessageProcessor processor) {
+    public void register(MessageProcessor processor) {
         log.debug("Registering processor of type {}", processor.getType());
         processors.put(processor.getType(), processor);
     }

@@ -1,4 +1,4 @@
-package com.megustav.lolesports.schedule.transformer;
+package com.megustav.lolesports.schedule.processor.upcoming;
 
 import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
 import com.megustav.lolesports.schedule.riot.data.MatchInfo;
@@ -30,7 +30,8 @@ public class UpcomingMatchesTransformer {
     /**
      * Filtering the schedule and forming outgoing message
      * This as well is to be annihilated when persistence is implemented
-     * TODO persistent data
+     *
+     * TODO persistent data and optimisation
      *
      * @param schedule schedule information
      * @return list of matches to be sent
@@ -59,17 +60,7 @@ public class UpcomingMatchesTransformer {
      */
     private List<MatchInfo> retrieveMatches(ScheduleInformation schedule) {
         List<MatchInfo> matches = new ArrayList<>();
-        ZonedDateTime now = ZonedDateTime.ofInstant(new Date().toInstant(), ZoneOffset.UTC)
-                .truncatedTo(ChronoUnit.DAYS);
-        List<ScheduleItem> items = schedule.getScheduleItems().stream()
-                .filter(item -> ZonedDateTime.ofInstant(item.getTime().toInstant(), ZoneOffset.UTC).isAfter(now))
-                // Filtering out invalid data
-                .filter(item -> Objects.nonNull(item.getTournament()))
-                .filter(item -> Objects.nonNull(item.getBracket()))
-                .filter(item -> Objects.nonNull(item.getMatch()))
-                .limit(MATCHES_LIMIT)
-                .collect(Collectors.toList());
-        for (ScheduleItem item : items) {
+        for (ScheduleItem item : retrieveScheduleItems(schedule)) {
             Optional<TournamentInfo> tournamentOpt = schedule.getTournaments().stream()
                     .filter(tournament -> tournament.getId().equals(item.getTournament()))
                     .findAny();
@@ -80,14 +71,7 @@ public class UpcomingMatchesTransformer {
 
             // Forming main match information
             TournamentInfo tournament = tournamentOpt.get();
-            Optional<Match> matchInfo = tournament.getBrackets().entrySet().stream()
-                    .map(Map.Entry::getValue)
-                    .filter(bracket -> Objects.equals(item.getBracket(), bracket.getId()))
-                    .map(Bracket::getMatches)
-                    .flatMap(map -> map.entrySet().stream())
-                    .map(Map.Entry::getValue)
-                    .filter(match -> Objects.equals(item.getMatch(), match.getId()))
-                    .findAny();
+            Optional<Match> matchInfo = findItemMatch(item, tournament);
             if (! matchInfo.isPresent()) {
                 log.warn("Match {} was not found", item.getMatch());
                 continue;
@@ -101,6 +85,43 @@ public class UpcomingMatchesTransformer {
             ));
         }
         return matches;
+    }
+
+    /**
+     * Get required schedule items
+     *
+     * @param schedule schedule data
+     * @return required schedule items
+     */
+    private List<ScheduleItem> retrieveScheduleItems(ScheduleInformation schedule) {
+        ZonedDateTime now = ZonedDateTime.ofInstant(new Date().toInstant(), ZoneOffset.UTC)
+                .truncatedTo(ChronoUnit.DAYS);
+        return schedule.getScheduleItems().stream()
+                .filter(item -> ZonedDateTime.ofInstant(item.getTime().toInstant(), ZoneOffset.UTC).isAfter(now))
+                // Filtering out invalid data
+                .filter(item -> Objects.nonNull(item.getTournament()))
+                .filter(item -> Objects.nonNull(item.getBracket()))
+                .filter(item -> Objects.nonNull(item.getMatch()))
+                .limit(MATCHES_LIMIT)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Find corresponding match in tournament
+     *
+     * @param item schedule item
+     * @param tournament tournament
+     * @return corresponding match
+     */
+    private Optional<Match> findItemMatch(ScheduleItem item, TournamentInfo tournament) {
+        return tournament.getBrackets().entrySet().stream()
+                        .map(Map.Entry::getValue)
+                        .filter(bracket -> Objects.equals(item.getBracket(), bracket.getId()))
+                        .map(Bracket::getMatches)
+                        .flatMap(map -> map.entrySet().stream())
+                        .map(Map.Entry::getValue)
+                        .filter(match -> Objects.equals(item.getMatch(), match.getId()))
+                        .findAny();
     }
 
     /**

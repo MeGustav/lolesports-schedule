@@ -1,11 +1,11 @@
-package com.megustav.lolesports.schedule.processor;
+package com.megustav.lolesports.schedule.processor.upcoming;
 
 import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
+import com.megustav.lolesports.schedule.data.UpcomingMatches;
+import com.megustav.lolesports.schedule.processor.*;
+import com.megustav.lolesports.schedule.requester.DataRequester;
 import com.megustav.lolesports.schedule.riot.League;
-import com.megustav.lolesports.schedule.riot.RiotApiClient;
 import com.megustav.lolesports.schedule.riot.data.MatchInfo;
-import com.megustav.lolesports.schedule.riot.mapping.ScheduleInformation;
-import com.megustav.lolesports.schedule.transformer.UpcomingMatchesTransformer;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -37,25 +37,21 @@ public class UpcomingMatchesProcessor implements MessageProcessor {
     /** Message pattern */
     private static final Pattern MESSAGE_PATTERN =
             Pattern.compile(ProcessorType.UPCOMING.getPath() + "\\s(?<league>\\w+).*");
-
     /** Logger */
     private static final Logger log = LoggerFactory.getLogger(LolEsportsScheduleBot.class);
-    /** Riot api */
-    private final RiotApiClient apiClient;
+
+    /** Data provider */
+    private final DataRequester<League, UpcomingMatches> dataRequester;
     /** Processor repository */
     private final ProcessorRepository repository;
-    /** Upcoming matches transformer */
-    private final UpcomingMatchesTransformer transformer;
     /** Parsed template for forming messages */
     private final Template messageTemplate;
 
-    public UpcomingMatchesProcessor(RiotApiClient apiClient,
+    public UpcomingMatchesProcessor(DataRequester<League, UpcomingMatches> dataRequester,
                                     ProcessorRepository repository,
-                                    UpcomingMatchesTransformer transformer,
                                     Configuration configuration) throws IOException {
-        this.apiClient = apiClient;
+        this.dataRequester = dataRequester;
         this.repository = repository;
-        this.transformer = transformer;
         this.messageTemplate = configuration.getTemplate("upcoming.ftl");
     }
 
@@ -101,11 +97,9 @@ public class UpcomingMatchesProcessor implements MessageProcessor {
             return new SendMessage(chatId, message);
         }
 
-        // For now just getting the schedule by http request.
-        // Obviously this kind of info is to be persisted
-        ScheduleInformation schedule = apiClient.getSchedule(leagueOpt.get());
         // Transforming data into convenient form
-        Map<LocalDate, List<MatchInfo>> matches = transformer.transform(schedule);
+        Map<LocalDate, List<MatchInfo>> matches =
+                dataRequester.requestData(leagueOpt.get()).getMatches();
         // Forming message payload
         String responsePayload = formMessagePayload(leagueOpt.get(), matches);
 

@@ -4,8 +4,11 @@ package com.megustav.lolesports.schedule.riot;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
 import com.megustav.lolesports.schedule.riot.mapping.ScheduleInformation;
 import org.glassfish.jersey.client.ClientConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -19,6 +22,8 @@ import javax.ws.rs.core.MediaType;
  */
 public class RiotApiClient {
 
+    /** Logger */
+    private static final Logger log = LoggerFactory.getLogger(LolEsportsScheduleBot.class);
     /** Riot api schedule url */
     private static final String SCHEDULE_URL =
             "https://api.lolesports.com/api/v1/scheduleItems";
@@ -42,6 +47,7 @@ public class RiotApiClient {
      * @return schedule for the specified league
      */
     public ScheduleInformation getSchedule(League league) {
+        log.debug("Fetching schedule for {} from Riot API", league);
         return client.target(SCHEDULE_URL)
                 .queryParam("leagueId", league.getId())
                 .request(MediaType.APPLICATION_JSON_TYPE)

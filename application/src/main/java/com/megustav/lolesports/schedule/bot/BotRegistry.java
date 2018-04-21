@@ -35,6 +35,7 @@ public class BotRegistry {
         try {
             log.info("Registering bot...");
             api.registerBot(bot);
+            log.info("Bot registered");
         } catch (TelegramApiException ex) {
             log.error("Error registering bot", ex);
         }

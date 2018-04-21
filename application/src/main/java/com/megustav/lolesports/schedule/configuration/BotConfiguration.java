@@ -2,8 +2,6 @@ package com.megustav.lolesports.schedule.configuration;
 
 import com.megustav.lolesports.schedule.bot.BotRegistry;
 import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +9,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import javax.annotation.PostConstruct;
 
 /**
  * Schedule bot beans configuration
@@ -23,9 +19,6 @@ import javax.annotation.PostConstruct;
 @Configuration
 @Import(ProcessorConfiguration.class)
 public class BotConfiguration {
-
-    /** Logger */
-    private static final Logger log = LoggerFactory.getLogger(BotConfiguration.class);
 
     /** Environment parameters */
     private final Environment env;
@@ -40,15 +33,6 @@ public class BotConfiguration {
     }
 
     /**
-     * Initialize bots
-     */
-    @PostConstruct
-    public void initBots() {
-        log.info("Initializing bots...");
-        botRegistry().register(telegramBot());
-    }
-
-    /**
      * @return bot registry
      */
     @Bean
@@ -59,11 +43,12 @@ public class BotConfiguration {
     /**
      * @return telegram bot
      */
-    @Bean
+    @Bean(initMethod = "init")
     public LolEsportsScheduleBot telegramBot() {
         return new LolEsportsScheduleBot(
                 env.getProperty("telegram.bot.name"),
                 env.getProperty("telegram.bot.token"),
+                botRegistry(),
                 taskExecutor(),
                 processorConfiguration.processorRepository()
         );

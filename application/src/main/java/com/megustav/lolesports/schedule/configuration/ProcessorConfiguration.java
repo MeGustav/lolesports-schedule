@@ -1,9 +1,13 @@
 package com.megustav.lolesports.schedule.configuration;
 
+import com.megustav.lolesports.schedule.data.UpcomingMatches;
+import com.megustav.lolesports.schedule.requester.CachingDataRequester;
 import com.megustav.lolesports.schedule.processor.ProcessorRepository;
 import com.megustav.lolesports.schedule.processor.StartProcessor;
-import com.megustav.lolesports.schedule.processor.UpcomingMatchesProcessor;
-import com.megustav.lolesports.schedule.transformer.UpcomingMatchesTransformer;
+import com.megustav.lolesports.schedule.requester.UpcomingMatchesApiRequester;
+import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesProcessor;
+import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesTransformer;
+import com.megustav.lolesports.schedule.riot.League;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,19 +24,24 @@ import java.io.IOException;
 @Configuration
 @Import({
         RiotApiConfiguration.class,
+        CacheConfiguration.class,
         FreemarkerConfiguration.class
 })
 public class ProcessorConfiguration {
 
     /** API configuration */
     private final RiotApiConfiguration apiConfiguration;
+    /** Cache configuration */
+    private final CacheConfiguration cacheConfiguration;
     /** Freemarker configuration */
     private final FreemarkerConfiguration freemarkerConfiguration;
 
     @Autowired
     public ProcessorConfiguration(RiotApiConfiguration apiConfiguration,
+                                  CacheConfiguration cacheConfiguration,
                                   FreemarkerConfiguration freemarkerConfiguration) {
         this.apiConfiguration = apiConfiguration;
+        this.cacheConfiguration = cacheConfiguration;
         this.freemarkerConfiguration = freemarkerConfiguration;
     }
 
@@ -50,9 +59,8 @@ public class ProcessorConfiguration {
     @Bean(initMethod = "init")
     public UpcomingMatchesProcessor upcomingMatchesProcessor() throws IOException {
         return new UpcomingMatchesProcessor(
-                apiConfiguration.riotApiClient(),
+                cachingUpcomingRequester(),
                 processorRepository(),
-                upcomingMatchesTransformer(),
                 freemarkerConfiguration.configuration()
         );
     }
@@ -73,5 +81,30 @@ public class ProcessorConfiguration {
         return new UpcomingMatchesTransformer();
     }
 
+    /**
+     * @return caching upcoming matches requester
+     */
+    @Bean
+    public CachingDataRequester<League, UpcomingMatches> cachingUpcomingRequester() {
+        return new CachingDataRequester<>(
+                "UPCOMING",
+                cacheConfiguration.cacheManager(),
+                League.class,
+                UpcomingMatches.class,
+                // For now using the requester
+                // which gets data using Riot API.
+                // Later this could be swapped with, say,
+                // database data requester
+                riotRequester()
+        );
+    }
+
+    /**
+     * @return requester that gets data uning Riot API
+     */
+    @Bean
+    public UpcomingMatchesApiRequester riotRequester() {
+        return new UpcomingMatchesApiRequester(apiConfiguration.riotApiClient(), upcomingMatchesTransformer());
+    }
 
 }

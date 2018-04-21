@@ -31,6 +31,8 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
     private final String botName;
     /** Bot token */
     private final String botToken;
+    /** Bot registry */
+    private final BotRegistry botRegistry;
     /** Processor repository */
     private final ProcessorRepository repository;
     /** Task executor */
@@ -38,12 +40,21 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
 
     public LolEsportsScheduleBot(String botName,
                                  String botToken,
+                                 BotRegistry botRegistry,
                                  TaskExecutor executor,
                                  ProcessorRepository repository) {
         this.botName = botName;
         this.botToken = botToken;
+        this.botRegistry = botRegistry;
         this.executor = executor;
         this.repository = repository;
+    }
+
+    /**
+     * Registering bot in the registry
+     */
+    public void init() {
+        botRegistry.register(this);
     }
 
     @Override

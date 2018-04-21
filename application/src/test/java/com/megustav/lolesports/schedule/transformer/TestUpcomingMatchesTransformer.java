@@ -2,6 +2,7 @@ package com.megustav.lolesports.schedule.transformer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesTransformer;
 import com.megustav.lolesports.schedule.riot.data.MatchInfo;
 import com.megustav.lolesports.schedule.riot.mapping.ScheduleInformation;
 import org.assertj.core.api.Assertions;
