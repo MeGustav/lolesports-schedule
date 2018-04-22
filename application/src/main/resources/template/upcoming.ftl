@@ -44,7 +44,7 @@ No new schedule yet.
     <#list schedule?keys as key>
 *${key}*
     <#list schedule?values[key_index] as match>
-    `${match.getTime().format("HH:mm")} (UTC)` - ${formFullName(match.getName(), match.getTeams())}
+    `${match.getTime().format("HH:mm")}(UTC)` - ${formFullName(match.getName(), match.getTeams())}
     </#list>
     <#-- Adding a blank line untill the last date -->
     <#if key_index < schedule?size - 1>

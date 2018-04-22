@@ -13,7 +13,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import no.api.freemarker.java8.Java8ObjectWrapper;
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -104,8 +103,9 @@ public class TestUpcomingMatchesProcessor {
         Mockito.when(client.getSchedule(Mockito.any())).thenReturn(response);
 
         SendMessage sendMessage = requestUpcomingMatches(League.NALCS);
-        String expectedPayload = IOUtils.toString(TestUpcomingMatchesProcessor.class
-                .getResource("/upcoming/empty-schedule-bot-response.md"), StandardCharsets.UTF_8);
+        String expectedPayload = evaluateTemplate("empty-schedule-bot-response.md.ftl", ImmutableMap.of(
+                "league", League.NALCS
+        ));
         assertThat(sendMessage.getText()).as("Message text").isEqualTo(expectedPayload);
         // Checking the footer
         checkReplyMarkdown(sendMessage);

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Riot API client
@@ -27,6 +28,9 @@ public class RiotApiClient {
     /** Riot api schedule url */
     private static final String SCHEDULE_URL =
             "https://api.lolesports.com/api/v1/scheduleItems";
+    /** Timeouts */
+    private static final long CONNECTION_TIMEOUT = 30;
+    private static final long READ_TIMEOUT = 30;
 
     /** HTTP-client */
     private final Client client;
@@ -65,6 +69,10 @@ public class RiotApiClient {
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(mapper);
 
-        return ClientBuilder.newClient(new ClientConfig(provider));
+        return ClientBuilder.newBuilder()
+                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+                .withConfig(new ClientConfig(provider))
+                .build();
     }
 }
