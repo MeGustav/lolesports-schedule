@@ -1,10 +1,12 @@
-package com.megustav.lolesports.schedule.processor;
+package com.megustav.lolesports.schedule.context;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.collect.ImmutableMap;
 import com.megustav.lolesports.schedule.configuration.FreemarkerConfiguration;
 import com.megustav.lolesports.schedule.configuration.ProcessorConfiguration;
+import com.megustav.lolesports.schedule.processor.ProcessingInfo;
+import com.megustav.lolesports.schedule.processor.ProcessorType;
 import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesProcessor;
 import com.megustav.lolesports.schedule.riot.League;
 import com.megustav.lolesports.schedule.riot.RiotApiClient;
