@@ -1,6 +1,6 @@
 package com.megustav.lolesports.schedule.data;
 
-import com.megustav.lolesports.schedule.riot.data.MatchInfo;
+import com.megustav.lolesports.schedule.riot.MatchInfo;
 
 import java.time.LocalDate;
 import java.util.List;

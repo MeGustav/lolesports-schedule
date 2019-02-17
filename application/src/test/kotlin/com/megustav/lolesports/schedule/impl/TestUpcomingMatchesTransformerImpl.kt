@@ -2,7 +2,7 @@ package com.megustav.lolesports.schedule.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesTransformer
-import com.megustav.lolesports.schedule.riot.mapping.ScheduleInformation
+import com.megustav.lolesports.schedule.riot.json.ScheduleInformation
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -21,7 +21,7 @@ class TestUpcomingMatchesTransformerImpl {
     private val transformer = UpcomingMatchesTransformer()
 
     @Test
-    fun base() {
+    fun testBasicTransformation() {
         val schedule = READER.readValue<ScheduleInformation>(
                 UpcomingMatchesTransformer::class.java.getResource("/upcoming/base-riot-response.json"))
         val matches = transformer.transform(schedule)

@@ -9,9 +9,3 @@ jobs:
     steps:
       - checkout
       - run: mvn clean install
-      - deploy:
-          name: Copy dist
-          command: scp -oStrictHostKeyChecking=no ~/repo/dist/target/distributive.zip $SERVER_USER@$SERVER_IP:$DIST_PATH/distributive.zip
-      - run:
-          name: Unpack
-          command: ssh -oStrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "python3 $DEPLOY_SCRIPTS_PATH/deploy.py $DIST_PATH/distributive.zip $APP_PATH $BOT_NAME $BOT_TOKEN"

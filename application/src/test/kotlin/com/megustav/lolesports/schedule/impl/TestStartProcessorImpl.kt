@@ -2,7 +2,7 @@ package com.megustav.lolesports.schedule.impl
 
 import com.megustav.lolesports.schedule.processor.ProcessingInfo
 import com.megustav.lolesports.schedule.processor.ProcessorRepository
-import com.megustav.lolesports.schedule.processor.StartProcessor
+import com.megustav.lolesports.schedule.processor.impl.StartProcessor
 import com.megustav.lolesports.schedule.riot.League
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,7 +33,7 @@ class TestStartProcessorImpl {
      */
     @Test
     fun testStartProcessor() {
-        val preparedMethod = processor.processIncomingMessage(ProcessingInfo(1L, null))
+        val preparedMethod = processor.processIncomingMessage(ProcessingInfo(1L))
 
         assertTrue { preparedMethod is SendMessage }
         val sendMessage = preparedMethod as SendMessage

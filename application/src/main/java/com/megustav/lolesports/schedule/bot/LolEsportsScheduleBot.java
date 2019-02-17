@@ -14,8 +14,6 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import java.util.Optional;
-
 /**
  * A telegram bot providing information on the upcoming competitive League of Legends events
  *
@@ -90,22 +88,22 @@ public class LolEsportsScheduleBot extends TelegramLongPollingBot {
         }
 
         // Getting request type
-        Optional<ProcessorType> typeOpt = ProcessorType.fromRequest(payload);
-        if (!typeOpt.isPresent()) {
+        ProcessorType type = ProcessorType.fromRequest(payload);
+        if (type == null) {
             processBusinessError(chatId, "Unsupported processor type: " + payload);
             return;
         }
 
         // Getting the actual processor
-        Optional<MessageProcessor> processorOpt = repository.getProcessor(typeOpt.get());
-        if (!processorOpt.isPresent()) {
-            processBusinessError(chatId, "No processor registered for type: " + typeOpt.get());
+        MessageProcessor processor = repository.getProcessor(type);
+        if (processor == null) {
+            processBusinessError(chatId, "No processor registered for type: " + type);
             return;
         }
 
         // Sending response message
         try {
-            execute(processorOpt.get().processIncomingMessage(info));
+            execute(processor.processIncomingMessage(info));
         } catch (Exception ex) {
             log.error("{} Error processing message", MessageUtils.formChatPrefix(chatId), ex);
             execute(new SendMessage(chatId, "Internal server error"));

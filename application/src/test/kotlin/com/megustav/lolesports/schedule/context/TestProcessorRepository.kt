@@ -30,7 +30,7 @@ class TestProcessorRepository {
     fun testAllProcessorsRegistered() {
 
         ProcessorType.values().forEach {
-            assertTrue { repository.getProcessor(it).isPresent }
+            assertTrue { repository.getProcessor(it) != null }
         }
     }
 

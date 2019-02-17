@@ -7,7 +7,7 @@ import com.megustav.lolesports.schedule.processor.ProcessorType
 import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesProcessor
 import com.megustav.lolesports.schedule.requester.DataRequester
 import com.megustav.lolesports.schedule.riot.League
-import com.megustav.lolesports.schedule.riot.data.MatchInfo
+import com.megustav.lolesports.schedule.riot.MatchInfo
 import freemarker.template.Configuration
 import freemarker.template.Template
 import org.junit.Before
@@ -26,7 +26,6 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 /**
- *
  * @author MeGustav
  *         2019-02-14 20:55
  */
@@ -35,7 +34,7 @@ class TestUpcomingMatchesProcessorImpl {
 
     companion object {
         private const val UPCOMING_COMMAND = "/upcoming"
-        private val DEFAULT_LEAGUE = League.EULCS
+        private val DEFAULT_LEAGUE = League.LEC
     }
 
     @Mock
@@ -97,7 +96,7 @@ class TestUpcomingMatchesProcessorImpl {
 
     private fun givenMatchesFound(): UpcomingMatches =
             createMatches().apply {
-                `when`(dataRequester.requestData(eq(DEFAULT_LEAGUE))).thenReturn(this)
+                `when`(dataRequester.requestData(DEFAULT_LEAGUE)).thenReturn(this)
             }
 
     private fun givenValidIncomingMessage() =

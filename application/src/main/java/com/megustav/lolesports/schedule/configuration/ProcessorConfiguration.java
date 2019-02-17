@@ -1,11 +1,11 @@
 package com.megustav.lolesports.schedule.configuration;
 
+import com.megustav.lolesports.schedule.requester.UpcomingMatchesRequester;
 import com.megustav.lolesports.schedule.data.UpcomingMatches;
 import com.megustav.lolesports.schedule.requester.CachingDataRequester;
 import com.megustav.lolesports.schedule.processor.ProcessorRepository;
-import com.megustav.lolesports.schedule.processor.StartProcessor;
+import com.megustav.lolesports.schedule.processor.impl.StartProcessor;
 import com.megustav.lolesports.schedule.requester.DataRequester;
-import com.megustav.lolesports.schedule.requester.UpcomingMatchesApiRequester;
 import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesProcessor;
 import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesTransformer;
 import com.megustav.lolesports.schedule.riot.League;
@@ -105,7 +105,7 @@ public class ProcessorConfiguration {
      */
     @Bean
     public DataRequester<League, UpcomingMatches> riotRequester() {
-        return new UpcomingMatchesApiRequester(apiConfiguration.riotApiClient(), upcomingMatchesTransformer());
+        return new UpcomingMatchesRequester(apiConfiguration.riotApiClient(), upcomingMatchesTransformer());
     }
 
 }

@@ -1,8 +1,8 @@
 package com.megustav.lolesports.schedule.processor.upcoming;
 
 import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot;
-import com.megustav.lolesports.schedule.riot.data.MatchInfo;
-import com.megustav.lolesports.schedule.riot.mapping.*;
+import com.megustav.lolesports.schedule.riot.MatchInfo;
+import com.megustav.lolesports.schedule.riot.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

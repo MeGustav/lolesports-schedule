@@ -1,6 +1,6 @@
 package com.megustav.lolesports.schedule.configuration;
 
-import com.megustav.lolesports.schedule.riot.RiotApiClient;
+import com.megustav.lolesports.schedule.riot.ScheduleApiClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,8 +17,8 @@ public class RiotApiConfiguration {
      * @return Riot API client
      */
     @Bean
-    public RiotApiClient riotApiClient() {
-        return new RiotApiClient();
+    public ScheduleApiClient riotApiClient() {
+        return new ScheduleApiClient();
     }
 
 }

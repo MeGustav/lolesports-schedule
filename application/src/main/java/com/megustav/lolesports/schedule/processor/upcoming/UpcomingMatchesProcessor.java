@@ -5,7 +5,7 @@ import com.megustav.lolesports.schedule.data.UpcomingMatches;
 import com.megustav.lolesports.schedule.processor.*;
 import com.megustav.lolesports.schedule.requester.DataRequester;
 import com.megustav.lolesports.schedule.riot.League;
-import com.megustav.lolesports.schedule.riot.data.MatchInfo;
+import com.megustav.lolesports.schedule.riot.MatchInfo;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -90,8 +90,8 @@ public class UpcomingMatchesProcessor implements MessageProcessor {
         }
 
         String requestedLeague = matcher.group("league");
-        Optional<League> leagueOpt = League.fromAlias(requestedLeague);
-        if (! leagueOpt.isPresent()) {
+        League league = League.fromAlias(requestedLeague);
+        if (league == null) {
             String message = "Unknown league alias: '" + requestedLeague + "'";
             consumeMessage(log::debug, chatId, message);
             return new SendMessage(chatId, message);
@@ -99,9 +99,9 @@ public class UpcomingMatchesProcessor implements MessageProcessor {
 
         // Transforming data into convenient form
         Map<LocalDate, List<MatchInfo>> matches =
-                dataRequester.requestData(leagueOpt.get()).getMatches();
+                dataRequester.requestData(league).getMatches();
         // Forming message payload
-        String responsePayload = formMessagePayload(leagueOpt.get(), matches);
+        String responsePayload = formMessagePayload(league, matches);
 
         SendMessage response = new SendMessage(chatId, responsePayload).enableMarkdown(true);
         appendFooter(response);
