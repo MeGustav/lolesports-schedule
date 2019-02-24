@@ -10,12 +10,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.collections.ArrayList
 
 /**
- *
  * @author MeGustav
  *         2019-02-23 12:58
  */
@@ -69,37 +67,37 @@ class UpcomingMatchesTransformer {
     }
 
     private fun retrieveScheduleItems(schedule: ScheduleInformation): List<ScheduleItem> {
-        val now = ZonedDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.DAYS)
+        val now = ZonedDateTime.now(ZoneOffset.UTC)
+        val dateFilter: (item: ScheduleItem) -> Boolean = {
+            ZonedDateTime.ofInstant(it.time!!.toInstant(), ZoneOffset.UTC).isAfter(now)
+        }
         return schedule.scheduleItems.asSequence()
                 .filter { it.tournament != null }
                 .filter { it.bracket != null }
                 .filter { it.match != null }
                 .filter { it.time != null }
-                .filter { ZonedDateTime.ofInstant(it.time!!.toInstant(), ZoneOffset.UTC).isAfter(now) }
+                .filter { dateFilter(it) }
+                .sortedBy { it.time }
                 .take(MATCHES_LIMIT)
                 .toList()
     }
 
     private fun findItemMatch(item: ScheduleItem, tournament: TournamentInfo): Match? =
             tournament.brackets
-                    ?.map { it.value }
-                    ?.filter { Objects.equals(item.bracket, it.id) }
-                    ?.mapNotNull { bracket -> bracket.matches }
-                    ?.flatMap { it.entries }
-                    ?.map { it.value }
-                    ?.find { match -> Objects.equals(item.match, match.id) }
+                    .map { it.value }
+                    .filter { Objects.equals(item.bracket, it.id) }
+                    .map { bracket -> bracket.matches }
+                    .flatMap { it.entries }
+                    .map { it.value }
+                    .find { match -> Objects.equals(item.match, match.id) }
 
     private fun retrieveTeams(match: Match, tournament: TournamentInfo): Set<String> {
-        if (match.rosters == null) {
-            return emptySet()
-        }
         val ids = match.rosters.map { it.id }.toSet()
         return tournament.rosters
-                ?.map { it.value }
-                ?.filter { ids.contains(it.id) }
-                ?.mapNotNull { it.name }
-                ?.toSet()
-                ?: emptySet()
+                .map { it.value }
+                .filter { ids.contains(it.id) }
+                .mapNotNull { it.name }
+                .toSet()
     }
 
 }

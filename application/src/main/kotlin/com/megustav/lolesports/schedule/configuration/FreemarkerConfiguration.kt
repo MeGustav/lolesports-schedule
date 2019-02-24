@@ -1,5 +1,7 @@
 package com.megustav.lolesports.schedule.configuration
 
+import com.megustav.lolesports.schedule.bot.AbstractTemplateEvaluator
+import com.megustav.lolesports.schedule.bot.UpcomingTemplateEvaluator
 import freemarker.template.Configuration
 import no.api.freemarker.java8.Java8ObjectWrapper
 import org.springframework.context.annotation.Bean
@@ -19,5 +21,9 @@ open class FreemarkerConfiguration {
         defaultEncoding = StandardCharsets.UTF_8.name()
         objectWrapper = Java8ObjectWrapper(Configuration.getVersion())
     }
+
+    @Bean
+    open fun upcomingTemplateEvaluator(): AbstractTemplateEvaluator =
+            UpcomingTemplateEvaluator(configuration())
 
 }

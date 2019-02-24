@@ -35,7 +35,7 @@ open class ProcessorConfiguration @Autowired constructor(
     open fun upcomingMatchesProcessor(): UpcomingMatchesProcessor = UpcomingMatchesProcessor(
             cachingUpcomingRequester(),
             processorRepository(),
-            freemarkerConfiguration.configuration()
+            freemarkerConfiguration.upcomingTemplateEvaluator()
     )
 
     @Bean(initMethod = "init")

@@ -1,5 +1,6 @@
 package com.megustav.lolesports.schedule.impl
 
+import com.megustav.lolesports.schedule.bot.UpcomingTemplateEvaluator
 import com.megustav.lolesports.schedule.processor.ProcessingInfo
 import com.megustav.lolesports.schedule.processor.ProcessorRepository
 import com.megustav.lolesports.schedule.processor.ProcessorType
@@ -8,19 +9,16 @@ import com.megustav.lolesports.schedule.processor.impl.upcoming.UpcomingMatchesP
 import com.megustav.lolesports.schedule.requester.DataRequester
 import com.megustav.lolesports.schedule.riot.League
 import com.megustav.lolesports.schedule.riot.MatchInfo
-import freemarker.template.Configuration
-import freemarker.template.Template
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
+import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.verification.VerificationMode
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
-import java.io.Writer
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
@@ -44,20 +42,10 @@ class TestUpcomingMatchesProcessorImpl {
     private lateinit var repository: ProcessorRepository
 
     @Mock
-    private lateinit var freemarkerConfiguration: Configuration
+    private lateinit var upcomingTemplateEvaluator: UpcomingTemplateEvaluator
 
-    @Mock
-    private lateinit var messageTemplate: Template
-
+    @InjectMocks
     private lateinit var processor: UpcomingMatchesProcessor
-
-    @Before
-    fun init() {
-        `when`(freemarkerConfiguration.getTemplate(eq("upcoming.ftl"))).thenReturn(messageTemplate)
-        processor = UpcomingMatchesProcessor(
-                dataRequester, repository, freemarkerConfiguration
-        )
-    }
 
     @Test
     fun testScheduleUpcomingProcessor() {
@@ -109,43 +97,33 @@ class TestUpcomingMatchesProcessorImpl {
             ProcessingInfo(1L, "$UPCOMING_COMMAND NonExistent")
 
     private fun givenMessageTemplateProcesses(): String =
-            "Dummy".apply {
-                `when`(messageTemplate.process(ArgumentMatchers.any(), ArgumentMatchers.any()))
-                        .thenAnswer {
-                            val writer = it.arguments[1] as Writer
-                            writer.write(this)
-                            null
-                        }
-            }
+            "Dummy".also {
+                `when`(upcomingTemplateEvaluator.formMessagePayload(
+                        any(), any()
 
+                )).thenReturn(it)
+            }
 
     private fun whenRequestingMatches(info: ProcessingInfo) =
             processor.processIncomingMessage(info) as SendMessage
 
-    private fun thenDataRequesterWasInvoked() {
-        verifyDataRequester()
-    }
+    private fun thenDataRequesterWasInvoked() = verifyDataRequester()
 
-    private fun thenDataRequesterWasNotInvoked() {
-        verifyDataRequester(never())
-    }
+    private fun thenDataRequesterWasNotInvoked() = verifyDataRequester(never())
 
-    private fun thenMessageTemplateWasInvoked(matches: UpcomingMatches) {
-        verifyMessageTemplate(matches)
-    }
+    private fun thenMessageTemplateWasInvoked(matches: UpcomingMatches) =
+            verifyTemplateEvaluator(matches)
 
-    private fun thenMessageTemplateWasNotInvoked(matches: UpcomingMatches) {
-        verifyMessageTemplate(matches, never())
-    }
+    private fun thenMessageTemplateWasNotInvoked(matches: UpcomingMatches) =
+            verifyTemplateEvaluator(matches, never())
 
     private fun thenOutgoingMessageIsComplete(message: SendMessage, text: String) {
         thenOutgoingTextIsCorrect(message, text)
         thenFooterIsCorrect(message)
     }
 
-    private fun thenOutgoingTextIsCorrect(message: SendMessage, text: String) {
-        assertEquals(text, message.text)
-    }
+    private fun thenOutgoingTextIsCorrect(message: SendMessage, text: String) =
+            assertEquals(text, message.text)
 
     private fun thenFooterIsCorrect(message: SendMessage) {
         val firstButton = (message.replyMarkup as InlineKeyboardMarkup).keyboard.flatten().first()
@@ -153,19 +131,14 @@ class TestUpcomingMatchesProcessorImpl {
         assertEquals(ProcessorType.START.path, firstButton.callbackData)
     }
 
-    private fun verifyDataRequester(mode: VerificationMode? = times(1)) {
-        verify(dataRequester, mode).requestData(DEFAULT_LEAGUE)
-    }
+    private fun verifyDataRequester(mode: VerificationMode? = times(1)) =
+            verify(dataRequester, mode).requestData(DEFAULT_LEAGUE)
 
-    private fun verifyMessageTemplate(matches: UpcomingMatches, mode: VerificationMode? = times(1)) {
-        verify(messageTemplate, mode).process(
-                eq(mapOf(
-                        "leagueName" to DEFAULT_LEAGUE,
-                        "schedule" to matches.matches
-                )),
-                any(Writer::class.java)
-        )
-    }
+    private fun verifyTemplateEvaluator(matches: UpcomingMatches, mode: VerificationMode? = times(1)) =
+            verify(upcomingTemplateEvaluator, mode).formMessagePayload(
+                    DEFAULT_LEAGUE, matches.matches
+            )
+
 
     private fun createMatches(): UpcomingMatches = UpcomingMatches(mapOf(
             LocalDate.of(2019, 1, 1) to listOf(
@@ -177,5 +150,14 @@ class TestUpcomingMatchesProcessorImpl {
                     MatchInfo("id4", "Game2", setOf("Team1", "Team4"), LocalDateTime.of(2019, 1, 2, 2, 0, 0))
             )
     ))
+
+    /**
+     * Hack to befriend Kotlin and Mockito in argument matching
+     */
+    private fun <T> any(): T {
+        Mockito.any<T>()
+        return uninitialized()
+    }
+    private fun <T> uninitialized(): T = null as T
 
 }

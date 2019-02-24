@@ -20,13 +20,13 @@ data class ScheduleInformation @JsonCreator constructor(
  */
 data class TournamentInfo @JsonCreator constructor(
         /** Tournament id */
-        @JsonProperty("id") val id: String? = null,
+        @JsonProperty("id") val id: String?,
         /** Tournament description */
-        @JsonProperty("description") val description: String? = null,
+        @JsonProperty("description") val description: String?,
         /** Tournament bracket */
-        @JsonProperty("brackets") val brackets: Map<String, Bracket>? = emptyMap(),
+        @JsonProperty("brackets") val brackets: Map<String, Bracket> = emptyMap(),
         /** Rosters competing in the tournament */
-        @JsonProperty("rosters") val rosters: Map<String, Roster>? = emptyMap()
+        @JsonProperty("rosters") val rosters: Map<String, Roster> = emptyMap()
 )
 
 /**
@@ -34,16 +34,16 @@ data class TournamentInfo @JsonCreator constructor(
  */
 data class ScheduleItem @JsonCreator constructor(
         /** Tournament GUID */
-        @JsonProperty("tournament") val tournament: String? = null,
+        @JsonProperty("tournament") val tournament: String?,
         /** Bracket GUID */
-        @JsonProperty("bracket") val bracket: String? = null,
+        @JsonProperty("bracket") val bracket: String?,
         /** Match GUID */
-        @JsonProperty("match") val match: String? = null,
+        @JsonProperty("match") val match: String?,
 
         /** Schedule time */
         @JsonProperty("scheduledTime")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-        val time: Date? = null
+        val time: Date?
 )
 
 /**
@@ -51,9 +51,9 @@ data class ScheduleItem @JsonCreator constructor(
  */
 data class Bracket @JsonCreator constructor(
         /** Bracket id */
-        @JsonProperty("id") val id: String? = null,
+        @JsonProperty("id") val id: String?,
         /** Matches within the bracket */
-        @JsonProperty("matches") val matches: Map<String, Match>? = emptyMap()
+        @JsonProperty("matches") val matches: Map<String, Match> = emptyMap()
 )
 
 /**
@@ -61,11 +61,11 @@ data class Bracket @JsonCreator constructor(
  */
 data class Match @JsonCreator constructor(
         /** Match id */
-        @JsonProperty("id") val id: String? = null,
+        @JsonProperty("id") val id: String?,
         /** Match name */
-        @JsonProperty("name") val name: String? = null,
+        @JsonProperty("name") val name: String?,
         /** Rosters */
-        @JsonProperty(value = "input", required = false) val rosters: List<MatchRoster>? = listOf()
+        @JsonProperty(value = "input", required = false) val rosters: List<MatchRoster> = listOf()
 )
 
 /**
@@ -74,7 +74,7 @@ data class Match @JsonCreator constructor(
  */
 data class MatchRoster @JsonCreator constructor(
         /** Roster id */
-        @JsonProperty("roster") val id: String? = null
+        @JsonProperty("roster") val id: String?
 )
 
 
@@ -83,7 +83,7 @@ data class MatchRoster @JsonCreator constructor(
  */
 data class Roster @JsonCreator constructor(
         /** Roster id */
-        @JsonProperty("id") val id: String? = null,
+        @JsonProperty("id") val id: String?,
         /** Roster name */
-        @JsonProperty("name") val name: String? = null
+        @JsonProperty("name") val name: String?
 )

@@ -22,7 +22,7 @@ class TestUpcomingMatchesTransformerImpl {
     @Test
     fun testBasicTransformation() {
         val schedule = READER.readValue<ScheduleInformation>(
-                UpcomingMatchesTransformer::class.java.getResource("/upcoming/base-riot-response.json"))
+                UpcomingMatchesTransformer::class.java.getResource("/processor/base-riot-response.json"))
         val matches = transformer.transform(schedule)
         assertEquals(2, matches.size)
     }
