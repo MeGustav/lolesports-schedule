@@ -18,11 +18,7 @@ class ScheduleApiClient {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(ScheduleApiClient::class.java)
 
-        /**
-         * Riot api schedule url
-         *
-         * TODO move to configuration
-         */
+        /** Riot api schedule url */
         private const val SCHEDULE_URL = "https://api.lolesports.com/api/v1/scheduleItems"
         /** Timeouts  */
         private const val CONNECTION_TIMEOUT: Long = 30
@@ -41,7 +37,7 @@ class ScheduleApiClient {
      * Get schedule information for the league
      *
      * Although latest Riot API is labeled v3
-     * we are forced (as are LoLEsports) to use this obsolete call
+     * we are forced to use this call
      * because latest api does not (at least officially) provide
      * any easy way to get info about the competitive scene.
      *

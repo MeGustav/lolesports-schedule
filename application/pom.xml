@@ -89,7 +89,6 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/test/java</source>
                                 <source>src/test/kotlin</source>
                             </sourceDirs>
                         </configuration>
@@ -102,7 +101,6 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/main/java</source>
                                 <source>src/main/kotlin</source>
                             </sourceDirs>
                         </configuration>
@@ -117,7 +115,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.megustav.lolesports.schedule.Application</mainClass>
+                    <mainClass>com.megustav.lolesports.schedule.MainKt</mainClass>
                     <layout>ZIP</layout>
                     <finalName>application</finalName>
                 </configuration>

@@ -38,7 +38,7 @@
             <dependency>
                 <groupId>org.telegram</groupId>
                 <artifactId>telegrambots</artifactId>
-                <version>3.6</version>
+                <version>4.1.2</version>
             </dependency>
             <!-- Jersey -->
             <!-- Using Jersey over CXF due to odd mutable nature of it's client -->

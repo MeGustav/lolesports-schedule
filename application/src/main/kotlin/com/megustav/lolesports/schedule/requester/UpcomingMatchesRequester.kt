@@ -1,7 +1,7 @@
 package com.megustav.lolesports.schedule.requester
 
-import com.megustav.lolesports.schedule.data.UpcomingMatches
-import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesTransformer
+import com.megustav.lolesports.schedule.processor.UpcomingMatches
+import com.megustav.lolesports.schedule.processor.impl.upcoming.UpcomingMatchesTransformer
 import com.megustav.lolesports.schedule.riot.League
 import com.megustav.lolesports.schedule.riot.ScheduleApiClient
 import org.slf4j.Logger

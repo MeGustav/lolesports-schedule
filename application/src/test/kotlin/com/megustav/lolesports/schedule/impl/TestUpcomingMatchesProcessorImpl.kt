@@ -1,10 +1,10 @@
 package com.megustav.lolesports.schedule.impl
 
-import com.megustav.lolesports.schedule.data.UpcomingMatches
 import com.megustav.lolesports.schedule.processor.ProcessingInfo
 import com.megustav.lolesports.schedule.processor.ProcessorRepository
 import com.megustav.lolesports.schedule.processor.ProcessorType
-import com.megustav.lolesports.schedule.processor.upcoming.UpcomingMatchesProcessor
+import com.megustav.lolesports.schedule.processor.UpcomingMatches
+import com.megustav.lolesports.schedule.processor.impl.upcoming.UpcomingMatchesProcessor
 import com.megustav.lolesports.schedule.requester.DataRequester
 import com.megustav.lolesports.schedule.riot.League
 import com.megustav.lolesports.schedule.riot.MatchInfo
@@ -18,8 +18,8 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.verification.VerificationMode
-import org.telegram.telegrambots.api.methods.send.SendMessage
-import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import java.io.Writer
 import java.time.LocalDate
 import java.time.LocalDateTime

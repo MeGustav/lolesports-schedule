@@ -1,9 +1,7 @@
 package com.megustav.lolesports.schedule.processor
 
-import freemarker.template.TemplateException
-import org.telegram.telegrambots.api.methods.BotApiMethod
-import org.telegram.telegrambots.api.objects.Message
-import java.io.IOException
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod
+import org.telegram.telegrambots.meta.api.objects.Message
 
 /**
  * Interface defining message processing contract
@@ -18,7 +16,6 @@ interface MessageProcessor {
      * @param processingInfo enough data to process a message
      * @return formed response
      */
-    @Throws(IOException::class, TemplateException::class)
     fun processIncomingMessage(processingInfo: ProcessingInfo): BotApiMethod<Message>
 
 }

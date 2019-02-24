@@ -4,13 +4,13 @@
       "tournament": "tournament",
       "bracket": "bracket",
       "match": "match1",
-      "scheduledTime": "2100-10-10T10:10:10.111Z"
+      "scheduledTime": "2100-10-10T10:10:10.111+0000"
     },
     {
       "tournament": "tournament",
       "bracket": "bracket",
       "match": "match2",
-      "scheduledTime": "2100-10-11T10:10:10.111Z"
+      "scheduledTime": "2100-10-11T10:10:10.111+0000"
     }
   ],
   "highlanderTournaments": [
@@ -43,16 +43,16 @@
               "id": "match1",
               "name": "Match number 1",
               "input": [
-                { "id": "roster1" },
-                { "id": "roster2" }
+                { "roster": "roster1" },
+                { "roster": "roster2" }
               ]
             },
             "match2": {
               "id": "match2",
               "name": "Match number 2",
               "input": [
-                { "id": "roster3" },
-                { "id": "roster4" }
+                { "roster": "roster3" },
+                { "roster": "roster4" }
               ]
             }
           }

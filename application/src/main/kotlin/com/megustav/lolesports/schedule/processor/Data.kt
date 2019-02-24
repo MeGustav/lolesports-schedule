@@ -1,5 +1,8 @@
 package com.megustav.lolesports.schedule.processor
 
+import com.megustav.lolesports.schedule.riot.MatchInfo
+import java.time.LocalDate
+
 /**
  * Processor type
  */
@@ -26,3 +29,5 @@ data class ProcessingInfo(
         /** Message payload  */
         val payload: String? = null
 )
+
+data class UpcomingMatches(val matches: Map<LocalDate, List<MatchInfo>>)
