@@ -45,7 +45,7 @@ class ScheduleApiClient {
      * @return schedule for the specified league
      */
     fun getSchedule(league: League): ScheduleInformation {
-        log.debug("Fetching schedule for $league from Riot API")
+        log.info("Fetching schedule for $league from Riot API")
         return client.target(SCHEDULE_URL)
                 .queryParam("leagueId", LEAGUE_IDS[league])
                 .request(MediaType.APPLICATION_JSON_TYPE)

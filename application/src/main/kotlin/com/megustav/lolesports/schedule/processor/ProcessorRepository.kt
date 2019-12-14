@@ -22,7 +22,7 @@ class ProcessorRepository {
      * @param processor processor
      */
     fun register(processor: MessageProcessor) {
-        log.debug("Registering processor of type ${processor.type}")
+        log.info("Registering processor of type ${processor.type}")
         processors[processor.type] = processor
     }
 

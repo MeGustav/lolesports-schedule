@@ -12,7 +12,6 @@
 
     <modules>
         <module>application</module>
-        <module>dist</module>
     </modules>
 
     <properties>
@@ -94,13 +93,13 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>5.3.5.Final</version>
             </dependency>
+
+            <!-- Test -->
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-test-junit</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
-
-            <!-- Test -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>

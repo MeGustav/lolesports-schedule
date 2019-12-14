@@ -2,7 +2,6 @@ package com.megustav.lolesports.schedule.configuration
 
 import com.megustav.lolesports.schedule.bot.BotRegistry
 import com.megustav.lolesports.schedule.bot.LolEsportsScheduleBot
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 @Configuration
-@ConfigurationProperties(prefix = "telegram.bot")
+@ConfigurationProperties(prefix = "bot")
 open class BotProperties {
     lateinit var name: String
     lateinit var token: String

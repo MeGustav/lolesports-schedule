@@ -22,7 +22,7 @@ class UpcomingMatchesRequester(
     }
 
     override fun requestData(request: League): UpcomingMatches {
-        log.debug("Receiving the upcoming matches for: $request")
+        log.info("Receiving the upcoming matches for: $request")
         return UpcomingMatches(
                 dataTransformer.transform(apiClient.getSchedule(request))
         )
