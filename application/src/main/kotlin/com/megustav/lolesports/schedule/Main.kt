@@ -21,15 +21,10 @@ private val log = LoggerFactory.getLogger(Application::class.java)
 open class Application
 
 fun main(args: Array<String>) {
-    info("Starting app...")
+    log.info("Starting app...")
     SpringApplicationBuilder(Application::class.java)
             .bannerMode(Banner.Mode.OFF)
             .listeners(ApplicationPidFileWriter("application.pid"))
             .run(*args)
-    info("App started")
-}
-
-private fun info(message: String) = message.let {
-    log.info(it)
-    println(it)
+    log.info("App started")
 }

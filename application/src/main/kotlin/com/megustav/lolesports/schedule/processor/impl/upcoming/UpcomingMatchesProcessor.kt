@@ -33,26 +33,26 @@ class UpcomingMatchesProcessor constructor(private val dataRequester: DataReques
     override fun processIncomingMessage(processingInfo: ProcessingInfo): BotApiMethod<Message> {
         val chatId = processingInfo.chatId
 
-        consumeMessage(log::debug, chatId, "Processing a full schedule request...")
-        consumeMessage(log::debug, chatId, "Received data: $processingInfo")
+        consumeMessage(log::info, chatId, "Processing a full schedule request...")
+        consumeMessage(log::info, chatId, "Received data: $processingInfo")
 
         val payload: String = processingInfo.payload
                 ?: "Empty message".let {
-                    consumeMessage(log::debug, chatId, it)
+                    consumeMessage(log::info, chatId, it)
                     return createMessage(chatId, it)
                 }
 
         val matcher = MESSAGE_PATTERN.matcher(payload)
         if (!matcher.matches()) {
             val message = "Unexpected message: '$payload'"
-            consumeMessage(log::debug, chatId, message)
+            consumeMessage(log::info, chatId, message)
             return createMessage(chatId, message)
         }
 
         val requestedLeague = matcher.group("league")
         val league = League.fromAlias(requestedLeague)
                 ?: "Unknown league alias: '$requestedLeague'".let {
-                    consumeMessage(log::debug, chatId, it)
+                    consumeMessage(log::info, chatId, it)
                     return createMessage(chatId, it)
                 }
 
@@ -60,7 +60,7 @@ class UpcomingMatchesProcessor constructor(private val dataRequester: DataReques
         val responsePayload = templateEvaluator.formMessagePayload(league, matches)
         return createMessage(chatId, responsePayload).also {
             appendFooter(it)
-            consumeMessage(log::debug, chatId, "Prepared response: $it")
+            consumeMessage(log::info, chatId, "Prepared response: $it")
         }
     }
 

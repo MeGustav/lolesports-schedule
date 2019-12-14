@@ -116,7 +116,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.megustav.lolesports.schedule.MainKt</mainClass>
-                    <layout>ZIP</layout>
                     <finalName>application</finalName>
                 </configuration>
                 <executions>
