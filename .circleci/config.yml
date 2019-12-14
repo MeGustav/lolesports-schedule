@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build-jar:
     docker:
-      - image: maven:3.6.3-jdk-8
+      - image: maven:3.6.3-jdk-11
     working_directory: /repo
     environment:
       MAVEN_OPTS: -Xmx3200m
@@ -13,8 +13,7 @@ jobs:
           root: /repo/application/target
           paths:
             - application.jar
-      - run: cd ./application
-      - run: ls -a
+      - run: cd ./application && ls -a && cd ./target && ls -a
 
   build-docker-image:
     docker:
