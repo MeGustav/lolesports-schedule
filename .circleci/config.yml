@@ -9,10 +9,8 @@ jobs:
     steps:
       - checkout
       - run: mvn clean install
-      - run: ls -a
-      - run: pwd
       - persist_to_workspace:
-          root: ~/application/target
+          root: ~/repo/application/target
           paths:
             - application.jar
 
@@ -20,8 +18,9 @@ jobs:
     docker:
       - image: docker:19.03
     steps:
+      - run: ls -a
       - attach_workspace:
-          at: ~/application/target
+          at: ~/repo/application/target
       - run: ls -a
 
 workflows:
