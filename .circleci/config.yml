@@ -15,11 +15,11 @@ jobs:
             - application.jar
 
   build-docker-image:
-    attach_workspace:
-      at: ~/application/target
     docker:
       - image: docker:19.03
     steps:
+      - attach_workspace:
+          at: ~/application/target
       - run: ls -a
 
 workflows:
