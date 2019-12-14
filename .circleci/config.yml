@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  build:
+  build-jar:
     docker:
       - image: maven:3.6.3-jdk-8
     working_directory: ~/repo
@@ -9,3 +9,24 @@ jobs:
     steps:
       - checkout
       - run: mvn clean install
+      - persist_to_workspace:
+          root: ~/application/target
+          paths:
+            - application.jar
+
+  build-docker-image:
+    attach_workspace:
+      at: ~/application/target
+    docker:
+      - image: docker:19.03
+    steps:
+      - run: ls -a
+
+workflows:
+  version: 2.1
+  build:
+    jobs:
+      - build-jar
+      - build-docker-image:
+          requires:
+            - build-jar
