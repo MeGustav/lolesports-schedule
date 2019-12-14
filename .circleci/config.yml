@@ -3,25 +3,26 @@ jobs:
   build-jar:
     docker:
       - image: maven:3.6.3-jdk-11
-    working_directory: /repo
+    working_directory: ~/repo
     environment:
       MAVEN_OPTS: -Xmx3200m
     steps:
       - checkout
       - run: mvn clean install
       - persist_to_workspace:
-          root: /repo/application
+          root: /root/repo/application
           paths:
             - target/application.jar
             - Dockerfile
 
   build-docker-image:
+    working_directory: ~/repo
     docker:
       - image: docker:19.03
     steps:
       - run: ls -a
       - attach_workspace:
-          at: /repo/application
+          at: /root/repo/application
       - run: ls -a
 
 workflows:
