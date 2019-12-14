@@ -10,10 +10,10 @@ jobs:
       - checkout
       - run: mvn clean install
       - persist_to_workspace:
-          root: /repo/application/target
+          root: /repo/application
           paths:
-            - application.jar
-      - run: cd ./application && ls -a && cd ./target && ls -a
+            - target/application.jar
+            - Dockerfile
 
   build-docker-image:
     docker:
@@ -21,7 +21,7 @@ jobs:
     steps:
       - run: ls -a
       - attach_workspace:
-          at: /repo/application/target
+          at: /repo/application
       - run: ls -a
 
 workflows:
