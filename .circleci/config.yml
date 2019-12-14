@@ -9,6 +9,8 @@ jobs:
     steps:
       - checkout
       - run: mvn clean install
+      - run: ls -a
+      - run: pwd
       - persist_to_workspace:
           root: ~/application/target
           paths:
