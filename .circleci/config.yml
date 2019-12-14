@@ -23,7 +23,7 @@ jobs:
       - attach_workspace:
           at: /root/repo/application
       - run: docker login -u "{{ .Environment.GITHUB_USER }}" -p "{{ .Environment.GITHUB_TOKEN }}" docker.pkg.github.com
-      - run: cd ./application && docker build -t docker.pkg.github.com/MeGustav/lolesports-schedule/schedulebot:latest .
+      - run: cd ./application && docker build -t docker.pkg.github.com/megustav/lolesports-schedule/schedulebot:latest .
       - run: docker push docker.pkg.github.com/megustav/lolesports-schedule/schedulebot:latest
 
 workflows:
