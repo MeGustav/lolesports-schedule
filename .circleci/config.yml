@@ -20,10 +20,11 @@ jobs:
     docker:
       - image: docker:19.03
     steps:
-      - run: ls -a
       - attach_workspace:
           at: /root/repo/application
-      - run: ls -a
+      - run: docker login -u {{ .Environment.GITHUB_USER }} -p {{ .Environment.GITHUB_TOKEN }} docker.pkg.github.com
+      - run: cd ./application && docker build -t docker.pkg.github.com/MeGustav/lolesports-schedule/schedulebot:latest .
+      - run: docker push docker.pkg.github.com/MeGustav/lolesports-schedule/schedulebot:latest
 
 workflows:
   version: 2.1
